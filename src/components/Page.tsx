@@ -1,0 +1,28 @@
+import type { PropsWithChildren } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { brand } from '@/constants/brand';
+
+type Props = PropsWithChildren<{ scroll?: boolean }>;
+
+export function Page({ children, scroll = true }: Props) {
+  return (
+    <SafeAreaView edges={['top']} style={styles.safe}>
+      {scroll ? (
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.content}>{children}</View>
+        </ScrollView>
+      ) : (
+        <View style={[styles.content, styles.fill]}>{children}</View>
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safe: { backgroundColor: brand.background, flex: 1 },
+  scrollContent: { alignItems: 'center', paddingBottom: 30 },
+  content: { maxWidth: 1120, paddingHorizontal: 22, width: '100%' },
+  fill: { flex: 1 },
+});

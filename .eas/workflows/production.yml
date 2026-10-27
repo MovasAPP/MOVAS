@@ -1,0 +1,35 @@
+name: CONTRATEI · validar, atualizar apps e publicar site
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  verify:
+    name: Verificar projeto
+    environment: production
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - name: Lint
+        run: npm run lint
+      - name: TypeScript
+        run: npx tsc --noEmit
+      - name: Exportar site
+        run: npx expo export --platform web
+
+  publish_update:
+    name: Atualizar Android e iOS
+    needs: [verify]
+    type: update
+    environment: production
+    params:
+      channel: production
+
+  deploy_web:
+    name: Publicar site
+    needs: [verify]
+    type: deploy
+    environment: production
+    params:
+      prod: true

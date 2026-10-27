@@ -1,0 +1,31 @@
+name: CONTRATEI · criar builds das lojas
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        type: choice
+        description: Plataforma para gerar o instalador
+        options:
+          - android
+          - ios
+          - all
+        required: true
+        default: all
+
+jobs:
+  build_android:
+    name: Build Android
+    if: ${{ inputs.platform == 'android' || inputs.platform == 'all' }}
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  build_ios:
+    name: Build iOS
+    if: ${{ inputs.platform == 'ios' || inputs.platform == 'all' }}
+    type: build
+    params:
+      platform: ios
+      profile: production
