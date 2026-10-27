@@ -69,6 +69,9 @@ export type VerifiedServiceCard = {
 };
 
 export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]> {
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError) throw sessionError;
+  const viewerId = sessionData.session?.user.id ?? null;
   const { data: services, error: servicesError } = await supabase.from('worker_services')
     .select('id, worker_id, category_id, title, city, starting_price, price_unit')
     .eq('active', true)
@@ -79,12 +82,17 @@ export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]
   if (!services?.length) return [];
 
   const workerIds = [...new Set(services.map((service) => service.worker_id))];
-  const [{ data: profiles, error: profilesError }, { data: ratings, error: ratingsError }] = await Promise.all([
+  const [{ data: profiles, error: profilesError }, { data: ratings, error: ratingsError }, ownProfileResult] = await Promise.all([
     supabase.from('profiles').select('id, public_name, city').in('id', workerIds),
     supabase.rpc('get_public_worker_ratings', { p_worker_ids: workerIds }),
+    viewerId && workerIds.includes(viewerId)
+      ? supabase.from('profiles').select('can_work, verification_status').eq('id', viewerId).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
   ]);
   if (profilesError) throw profilesError;
   if (ratingsError) throw ratingsError;
+  if (ownProfileResult.error) throw ownProfileResult.error;
+  const ownProfileIsVerified = ownProfileResult.data?.can_work === true && ownProfileResult.data.verification_status === 'verified';
 
   const profileById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
   type WorkerRatingRow = { worker_id: string; average_rating: number; review_count: number };
@@ -101,6 +109,7 @@ export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]
   };
 
   return services.flatMap((service) => {
+    if (service.worker_id === viewerId && !ownProfileIsVerified) return [];
     const profile = profileById.get(service.worker_id);
     if (!profile) return [];
     const category = categoryById.get(service.category_id) ?? 'Outro';
