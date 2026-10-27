@@ -144,7 +144,7 @@ export default function MyRequestsScreen() {
                         <View><Text style={styles.priceLabel}>Valor do profissional</Text><Text style={styles.price}>{money(proposal.amount)}</Text></View>
                         <View style={styles.totalBox}><Text style={styles.totalLabel}>Total com taxa CONTRATEI (10%)</Text><Text style={styles.total}>{money(proposal.customerTotal)}</Text></View>
                       </View>
-                      <Text style={styles.processingFeeNote}>A tarifa de processamento do Mercado Pago será descontada do recebimento do profissional.</Text>
+                      <Text style={styles.processingFeeNote}>A tarifa do Mercado Pago varia conforme o meio escolhido e será descontada do recebimento do profissional. O valor final aparece no detalhamento da venda no Mercado Pago.</Text>
                       {(job.status === 'open' && proposal.status === 'pending') || (job.status === 'awaiting_payment' && proposal.id === job.paymentProposalId && proposal.status === 'pending') ? (
                         <Pressable disabled={busyPaymentId !== null} onPress={() => void payProposal(proposal.id)} style={[styles.payButton, busyPaymentId !== null && { opacity: 0.65 }]}>
                           <Text style={styles.payButtonText}>{busyPaymentId === proposal.id ? 'Preparando pagamento…' : job.status === 'awaiting_payment' ? `Retomar pagamento ${money(proposal.customerTotal)}` : `Contratar e pagar ${money(proposal.customerTotal)}`}</Text>

@@ -121,7 +121,7 @@ export default function MyProposalsScreen() {
             </View>
           </>
         )}
-        <Text style={styles.disclaimer}>*Total inclui 10% de taxa CONTRATEI, paga pelo cliente. A tarifa do Mercado Pago será descontada do recebimento do profissional e detalhada no checkout.</Text>
+        <Text style={styles.disclaimer}>*Total inclui 10% de taxa CONTRATEI, paga pelo cliente. A tarifa de processamento varia conforme o meio de pagamento e será descontada do recebimento do profissional. Consulte o valor final no detalhamento da venda do Mercado Pago.</Text>
       </Page>
       <AuthModal visible={authOpen} onClose={() => setAuthOpen(false)} />
     </View>
