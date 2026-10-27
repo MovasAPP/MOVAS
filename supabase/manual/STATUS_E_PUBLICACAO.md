@@ -19,7 +19,7 @@ Este documento separa o que está implementado no repositório do que já foi co
 
 No projeto `mzcbpilcbmpvfzgknqdg`, confira no SQL Editor se 006, 007 e 008 já foram executadas. Se não, rode os arquivos em `supabase/migrations/` um por vez, na ordem descrita em [EXECUTAR_MIGRATIONS_PENDENTES.md](EXECUTAR_MIGRATIONS_PENDENTES.md), e confira “Success” após cada arquivo. As migrations 009–012 também são necessárias para conclusão, chat, avaliações, suporte e notificações; aplique-as na mesma ordem antes de liberar esses recursos.
 
-Em Authentication → URL Configuration, adicione `contratei://reset-password` à lista de URLs de redirecionamento autorizadas. Depois que o endereço web de produção existir, adicione também `https://SEU-DOMINIO/reset-password` (ou o endereço EAS real) e configure o Site URL para a URL principal do CONTRATEI. Não deixe curingas amplos em produção. A recuperação de senha usa SMTP; para produção, configure um provedor SMTP próprio e teste confirmação de cadastro e redefinição de senha.
+Em Authentication → URL Configuration, adicione `contratei://auth-callback` e `contratei://reset-password` à lista de URLs de redirecionamento autorizadas. Depois que o endereço web de produção existir, adicione também `https://SEU-DOMINIO/auth-callback` e `https://SEU-DOMINIO/reset-password` (ou os endereços EAS reais) e configure o Site URL para a URL principal do CONTRATEI. Não deixe curingas amplos em produção. A confirmação de cadastro e a recuperação de senha usam e-mail; configure SMTP próprio e teste os dois fluxos.
 
 ### 2. Edge Functions e Mercado Pago
 

@@ -25,7 +25,7 @@ npm run web
 - Telas de segurança/privacidade e perfil com alternância entre contratar e trabalhar.
 - Navegação responsiva compartilhada entre web, Android e iOS.
 - Cadastro e entrada com e-mail e senha conectados ao Supabase Auth do projeto próprio CONTRATEI.
-- Recuperação de senha por e-mail com link de retorno compatível com Android, iOS e web.
+- Confirmação de e-mail no cadastro e recuperação de senha com link de retorno compatível com Android, iOS e web.
 - Publicação real de pedidos no Supabase, com fotos no bucket privado `job-photos`.
 - Mural de pedidos abertos e envio de propostas no banco, respeitando as políticas RLS.
 - Área do contratante para acompanhar pedidos próprios e comparar propostas, com total incluindo a taxa de 10% paga pelo contratante.

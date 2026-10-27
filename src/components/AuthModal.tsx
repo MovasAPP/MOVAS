@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import * as Linking from 'expo-linking';
 
 import { brand } from '@/constants/brand';
+import { getAuthRedirectUrl } from '@/lib/auth-links';
 import { supabase } from '@/lib/supabase';
 
 type Props = { visible: boolean; onClose: () => void };
@@ -26,17 +26,14 @@ export function AuthModal({ visible, onClose }: Props) {
     setBusy(true);
     try {
       if (mode === 'recover') {
-        const redirectTo = Platform.OS === 'web'
-          ? `${window.location.origin}/reset-password`
-          : Linking.createURL('reset-password', { scheme: 'contratei' });
-        const { error: recoveryError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo });
+        const { error: recoveryError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: getAuthRedirectUrl('reset-password') });
         if (recoveryError) throw recoveryError;
         setRecoverySent(true);
       } else if (mode === 'signup') {
         const { data, error: signUpError } = await supabase.auth.signUp({
           email: email.trim().toLowerCase(),
           password,
-          options: { data: { public_name: name.trim() } },
+          options: { data: { public_name: name.trim() }, emailRedirectTo: getAuthRedirectUrl('auth-callback') },
         });
         if (signUpError) throw signUpError;
         if (data.session) onClose();
@@ -80,7 +77,7 @@ export function AuthModal({ visible, onClose }: Props) {
             </View>
             {confirmationSent ? (
               <View style={styles.confirmationBox}>
-                <Text style={styles.confirmationText}>Sua conta só entra no app depois que você confirmar o endereço. Não compartilhe o link de confirmação com ninguém.</Text>
+                <Text style={styles.confirmationText}>Abra o link para confirmar seu e-mail. No celular, ele volta ao app; no site, volta ao CONTRATEI. Não compartilhe esse link.</Text>
                 <Pressable onPress={() => switchMode('signin')} style={styles.submit}><Text style={styles.submitText}>Já confirmei · entrar</Text></Pressable>
               </View>
             ) : recoverySent ? (
