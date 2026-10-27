@@ -117,7 +117,9 @@ create or replace function public.get_public_worker_ratings(p_worker_ids uuid[])
 returns table (worker_id uuid, average_rating numeric, review_count bigint)
 language sql stable security definer set search_path = '' as $$
   select r.subject_id, round(avg(r.rating)::numeric, 2), count(*)
-  from public.job_reviews r where r.subject_id = any(coalesce(p_worker_ids, '{}'::uuid[]))
+  from public.job_reviews r
+  join public.profiles p on p.id = r.subject_id and p.can_work and p.verification_status = 'verified'
+  where r.subject_id = any(coalesce(p_worker_ids, '{}'::uuid[]))
   group by r.subject_id;
 $$;
 revoke all on function public.get_public_worker_ratings(uuid[]) from public;
