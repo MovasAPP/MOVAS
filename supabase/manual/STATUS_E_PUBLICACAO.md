@@ -8,8 +8,9 @@ Este documento separa o que está implementado no repositório do que já foi co
 - As migrations 001–005 foram executadas no projeto Supabase CONTRATEI, conforme o histórico do projeto.
 - O código local inclui autenticação, perfis, pedidos, propostas, verificação de identidade, revisão administrativa, pagamento preparado com Mercado Pago, conversas, avaliações, disputas e notificações.
 - A recuperação de senha por e-mail e a tela de troca de senha agora estão no app/site; ainda precisam de configuração e validação do redirecionamento no Supabase Auth.
-- As migrations 006–013 existem localmente. A migration 008 ainda não foi confirmada no banco: a API do projeto retornou que `public.job_payments` não existe. Não considerar 006–008 aplicadas até verificar sucesso no SQL Editor.
+- As migrations 006–014 existem localmente. A migration 008 ainda não foi confirmada no banco: a API do projeto retornou que `public.job_payments` não existe. Não considerar 006–008 aplicadas até verificar sucesso no SQL Editor.
 - A migration 013 permite substituir documentos de identidade preservando a cópia anterior até que o novo envio seja confirmado. Ela depende da migration 002 e ainda não foi aplicada no Supabase.
+- A migration 014 impede que webhooks atrasados reabram tentativas de pagamento em estado final. Ela depende da migration 008 e ainda não foi aplicada no Supabase.
 - As Edge Functions de OAuth, checkout e webhook estão no repositório, mas ainda não foram publicadas nem receberam os segredos do Mercado Pago.
 - O app não tem `projectId` EAS configurado; os fluxos de publicação em `.eas/workflows/` ainda não estão ativos.
 - O acesso GitHub conectado não correspondeu ao proprietário do repositório privado, então não foi possível confirmar o acesso para enviar alterações. Nenhum push ou deploy foi feito.
