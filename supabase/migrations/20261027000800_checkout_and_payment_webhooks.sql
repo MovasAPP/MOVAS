@@ -45,7 +45,8 @@ returns table (
   worker_id uuid,
   service_amount numeric,
   platform_fee numeric,
-  customer_total numeric
+  customer_total numeric,
+  checkout_url text
 )
 language plpgsql
 security definer
@@ -57,7 +58,7 @@ declare
   v_payment public.job_payments%rowtype;
 begin
   select * into v_job from public.job_requests j
-  where j.client_id = p_client_id and j.status = 'open'
+  where j.client_id = p_client_id and j.status in ('open', 'awaiting_payment')
     and j.id = (select p.job_id from public.job_proposals p where p.id = p_proposal_id)
   for update;
   if not found then raise exception 'Este pedido não pode iniciar uma contratação.'; end if;
@@ -78,6 +79,17 @@ begin
 
   select * into v_payment from public.job_payments p
   where p.proposal_id = v_proposal.id for update;
+  if v_job.status = 'awaiting_payment' then
+    if not found or v_payment.job_id <> v_job.id or v_payment.client_id <> p_client_id then
+      raise exception 'Este pedido já está aguardando outro pagamento.';
+    end if;
+    if v_payment.status = 'pending' and v_payment.checkout_url is not null then
+      return query select v_payment.id, v_payment.job_id, v_payment.proposal_id, v_payment.worker_id,
+        v_payment.service_amount, v_payment.platform_fee, v_payment.customer_total, v_payment.checkout_url;
+      return;
+    end if;
+    raise exception 'O checkout ainda está sendo preparado. Tente novamente em instantes.';
+  end if;
   if found then
     if v_payment.status in ('creating', 'pending', 'approved') then
       raise exception 'Já existe um pagamento ativo para esta proposta.';
@@ -99,7 +111,7 @@ begin
   update public.job_requests set status = 'awaiting_payment' where id = v_job.id;
 
   return query select v_payment.id, v_payment.job_id, v_payment.proposal_id, v_payment.worker_id,
-    v_payment.service_amount, v_payment.platform_fee, v_payment.customer_total;
+    v_payment.service_amount, v_payment.platform_fee, v_payment.customer_total, null::text;
 end;
 $$;
 

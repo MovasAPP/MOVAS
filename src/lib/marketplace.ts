@@ -426,6 +426,7 @@ export type ClientJob = {
   city: string;
   status: 'open' | 'awaiting_payment' | 'in_progress' | 'completion_pending' | 'completed' | 'cancelled';
   createdAt: string;
+  paymentProposalId: string | null;
   proposals: ClientProposal[];
 };
 
@@ -443,6 +444,7 @@ export async function getWorkerProposals(workerId: string): Promise<WorkerPropos
     .eq('worker_id', workerId)
     .order('created_at', { ascending: false });
   if (proposalsError) throw proposalsError;
+
   if (!proposals?.length) return [];
 
   const jobIds = [...new Set(proposals.map((proposal) => proposal.job_id))];
@@ -489,6 +491,12 @@ export async function getClientJobsWithProposals(userId: string): Promise<Client
     .order('created_at', { ascending: false });
   if (proposalsError) throw proposalsError;
 
+  const { data: activePayments, error: paymentsError } = await supabase.from('job_payments')
+    .select('job_id, proposal_id, status')
+    .in('job_id', jobIds)
+    .in('status', ['creating', 'pending']);
+  if (paymentsError) throw paymentsError;
+
   const workerIds = [...new Set((proposals ?? []).map((proposal) => proposal.worker_id))];
   const { data: workers, error: workersError } = workerIds.length
     ? await supabase.from('profiles').select('id, public_name, city').in('id', workerIds)
@@ -504,6 +512,7 @@ export async function getClientJobsWithProposals(userId: string): Promise<Client
     city: job.city,
     status: job.status,
     createdAt: job.created_at,
+    paymentProposalId: activePayments?.find((payment) => payment.job_id === job.id)?.proposal_id ?? null,
     proposals: (proposals ?? []).filter((proposal) => proposal.job_id === job.id).map((proposal) => {
       const worker = workerById.get(proposal.worker_id);
       return {

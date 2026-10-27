@@ -23,8 +23,11 @@ Deno.serve(async (request) => {
     if (prepareError || !prepared?.length) {
       return jsonResponse({ error: prepareError?.message || 'Não foi possível iniciar este pagamento.' }, 409);
     }
-    const payment = prepared[0] as { payment_id: string; proposal_id: string; job_id: string; worker_id: string; service_amount: number; platform_fee: number; customer_total: number };
+    const payment = prepared[0] as { payment_id: string; proposal_id: string; job_id: string; worker_id: string; service_amount: number; platform_fee: number; customer_total: number; checkout_url: string | null };
     paymentId = payment.payment_id;
+    if (payment.checkout_url) {
+      return jsonResponse({ checkoutUrl: payment.checkout_url, customerTotal: Number(payment.customer_total), serviceAmount: Number(payment.service_amount), platformFee: Number(payment.platform_fee) });
+    }
 
     const { accessToken, providerUserId } = await getMercadoPagoSellerToken(admin, payment.worker_id);
     const webUrl = Deno.env.get('CONTRATEI_WEB_URL');
