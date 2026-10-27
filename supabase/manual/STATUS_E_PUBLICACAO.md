@@ -13,7 +13,7 @@ Este documento separa o que está implementado no repositório do que já foi co
 - A migration 014 impede que webhooks atrasados reabram tentativas de pagamento em estado final. Ela depende da migration 008 e ainda não foi aplicada no Supabase.
 - A migration 015 remove a política ampla de leitura de pedidos abertos e conserva o acesso apenas para o contratante, o profissional contratado e profissionais verificados. Ela depende das migrations 003 e 010 e ainda não foi aplicada no Supabase.
 - As Edge Functions de OAuth, checkout e webhook estão no repositório, mas ainda não foram publicadas nem receberam os segredos do Mercado Pago.
-- O app não tem `projectId` EAS configurado e a CLI consultada nesta máquina retornou `Not logged in`; os fluxos de publicação em `.eas/workflows/` ainda não estão ativos.
+- O projeto EAS `@contratei.app/contratei` está criado e associado ao `projectId` `4707f645-b53b-43cf-b9ac-466dc225a789`. A URL e a chave publicável do Supabase estão cadastradas como variáveis plaintext nos ambientes EAS `preview` e `production`.
 - A conexão GitHub atual está autenticada como `Murilobuenodeoliveira` e mostra o repositório privado do CRM Steinmetz, mas não mostra `murilobuenocontratei/Contratei`. O `origin` local para esse endereço retorna 404. Nenhum push ou deploy foi feito; não enviar este projeto ao repositório do CRM.
 
 ## Próximas etapas
@@ -43,7 +43,7 @@ Na conta GitHub que deve ser dona do CONTRATEI, confirme que existe um repositó
 
 ### 4. EAS, site e apps
 
-Faça login no EAS com a conta do CONTRATEI, associe este projeto e configure o `projectId` retornado pelo EAS no `app.json`. Nesta máquina não há sessão EAS ativa. Cadastre `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` nos ambientes `preview` e `production`. Conecte o GitHub privado ao EAS para ativar os workflows versionados em `.eas/workflows/`.
+O projeto EAS e as variáveis de ambiente já estão configurados. Para ativar os workflows versionados em `.eas/workflows/`, o repositório privado correto precisa estar acessível à integração GitHub e conectado ao EAS. O `origin` configurado atualmente retorna 404, então nenhum push ou deploy foi feito.
 
 O workflow de produção prepara a publicação do site e uma atualização OTA compatível. Alterações que mudem código nativo exigem nova build Android/iOS e publicação/validação nas lojas. Para isso, serão necessárias as contas de desenvolvedor Google Play e Apple Developer, além de credenciais de assinatura. Um domínio próprio é opcional; primeiro é possível publicar no domínio EAS.
 
