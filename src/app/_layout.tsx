@@ -24,6 +24,11 @@ export default function RootLayout() {
       <Tabs.Screen name="my-requests" options={{ href: null }} />
       <Tabs.Screen name="my-proposals" options={{ href: null }} />
       <Tabs.Screen name="oauth" options={{ href: null }} />
+      <Tabs.Screen name="chat" options={{ href: null }} />
+      <Tabs.Screen name="review-job" options={{ href: null }} />
+      <Tabs.Screen name="dispute" options={{ href: null }} />
+      <Tabs.Screen name="disputes" options={{ href: null }} />
+      <Tabs.Screen name="notifications" options={{ href: null }} />
       </Tabs>
     </AuthProvider>
   );

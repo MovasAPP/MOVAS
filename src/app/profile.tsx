@@ -29,6 +29,7 @@ export default function ProfileScreen() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [canReview, setCanReview] = useState(false);
+  const [canSupport, setCanSupport] = useState(false);
   const [mercadoPagoConnected, setMercadoPagoConnected] = useState<boolean | null>(null);
   const [mercadoPagoBusy, setMercadoPagoBusy] = useState(false);
   const [mercadoPagoError, setMercadoPagoError] = useState('');
@@ -70,8 +71,10 @@ export default function ProfileScreen() {
     if (!user) return () => { active = false; };
     void Promise.resolve().then(() => getReviewerRole(user.id)).then((role) => {
       if (active) setCanReview(role === 'owner' || role === 'verifier');
+      if (active) setCanSupport(role === 'owner' || role === 'support');
     }).catch(() => {
       if (active) setCanReview(false);
+      if (active) setCanSupport(false);
     });
     return () => { active = false; };
   }, [user]);
@@ -177,6 +180,16 @@ export default function ProfileScreen() {
             <Text style={styles.arrow}>›</Text>
           </Pressable>
         ) : null}
+        {user ? <Pressable onPress={() => router.push('/notifications')} style={styles.requestsLink}>
+          <View style={styles.requestsIcon}><Text style={styles.requestsIconText}>◉</Text></View>
+          <View style={{ flex: 1 }}><Text style={styles.requestsTitle}>Notificações</Text><Text style={styles.requestsSubtitle}>Acompanhe mensagens e atualizações das suas contratações.</Text></View>
+          <Text style={styles.arrow}>›</Text>
+        </Pressable> : null}
+        {user && canSupport ? <Pressable onPress={() => router.push('/disputes')} style={styles.requestsLink}>
+          <View style={styles.requestsIcon}><Text style={styles.requestsIconText}>!</Text></View>
+          <View style={{ flex: 1 }}><Text style={styles.requestsTitle}>Painel do suporte</Text><Text style={styles.requestsSubtitle}>Revisar solicitações de ajuda das contratações.</Text></View>
+          <Text style={styles.arrow}>›</Text>
+        </Pressable> : null}
         <SectionTitle title="Seu perfil profissional" subtitle="Cadastre o que você faz e onde atende. O perfil é compartilhado entre Android, iOS e site." />
         {!user ? (
           <Pressable onPress={() => setAuthOpen(true)} style={styles.signUpPrompt}><Text style={styles.signUpText}>Entre ou crie sua conta para cadastrar seus serviços →</Text></Pressable>

@@ -119,6 +119,7 @@ export default function HomeScreen() {
               <View style={[styles.profileArt, { backgroundColor: person.color }]}><Text style={styles.profileIcon}>{person.icon}</Text><Text style={styles.profileCategory}>{person.category}</Text></View>
               <View style={styles.personHeading}><View style={styles.personAvatar}><Text style={styles.avatarText}>{person.name.split(' ').map((part) => part[0]).slice(0, 2).join('')}</Text></View><View style={{ flex: 1 }}><Text style={styles.personName}>{person.name}</Text><Text style={styles.personJob}>{person.title}</Text></View></View>
               <Text style={styles.personMeta}>✓ Identidade verificada · {person.city}, RS</Text>
+              <Text style={styles.ratingMeta}>{person.ratingCount ? `★ ${person.ratingAverage?.toFixed(1)} · ${person.ratingCount} ${person.ratingCount === 1 ? 'avaliação' : 'avaliações'}` : 'Ainda sem avaliações'}</Text>
               <View style={styles.professionalFooter}><Text style={styles.professionalPrice}>{person.priceLabel}</Text><Pressable onPress={() => openRequest(person.category)} style={styles.profileButton}><Text style={styles.profileButtonText}>Solicitar orçamento</Text></Pressable></View>
             </View>
           ))}
@@ -198,6 +199,7 @@ const styles = StyleSheet.create({
   personName: { color: brand.ink, fontSize: 13, fontWeight: '800' },
   personJob: { color: brand.muted, fontSize: 10, marginTop: 2 },
   personMeta: { color: brand.success, fontSize: 9, fontWeight: '700', marginTop: 9 },
+  ratingMeta: { color: '#946316', fontSize: 9, fontWeight: '800', marginTop: 5 },
   professionalFooter: { alignItems: 'center', borderTopColor: brand.border, borderTopWidth: 1, flexDirection: 'row', justifyContent: 'space-between', marginTop: 12, paddingTop: 10 },
   professionalPrice: { color: brand.ink, fontSize: 10, fontWeight: '700' },
   profileButton: { backgroundColor: brand.orangeSoft, borderRadius: 9, paddingHorizontal: 9, paddingVertical: 8 },

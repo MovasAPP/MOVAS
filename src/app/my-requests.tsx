@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 
 import { BrandHeader } from '@/components/BrandHeader';
@@ -15,6 +15,7 @@ const jobStatusLabel: Record<ClientJob['status'], string> = {
   open: 'Recebendo propostas',
   awaiting_payment: 'Aguardando pagamento',
   in_progress: 'Em andamento',
+  completion_pending: 'Aguardando confirmação da conclusão',
   completed: 'Concluído',
   cancelled: 'Cancelado',
 };
@@ -27,6 +28,7 @@ const proposalStatusLabel = {
 } as const;
 
 export default function MyRequestsScreen() {
+  const router = useRouter();
   const { payment } = useLocalSearchParams<{ payment?: string }>();
   const { user } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
@@ -163,6 +165,12 @@ export default function MyRequestsScreen() {
                       </View>
                     ) : <Pressable onPress={() => setConfirmCancelId(job.id)} style={styles.cancelLink}><Text style={styles.cancelLinkText}>Cancelar pedido</Text></Pressable>
                   ) : null}
+                  {['in_progress', 'completion_pending', 'completed'].includes(job.status) ? (
+                    <View style={styles.jobActions}>
+                      <Pressable onPress={() => router.push({ pathname: '/chat', params: { jobId: job.id } })} style={styles.secondaryAction}><Text style={styles.secondaryActionText}>Abrir conversa</Text></Pressable>
+                      {job.status === 'completed' ? <Pressable onPress={() => router.push({ pathname: '/review-job', params: { jobId: job.id } })} style={styles.secondaryAction}><Text style={styles.secondaryActionText}>Avaliar serviço</Text></Pressable> : null}
+                    </View>
+                  ) : null}
                 </View>
               ))}
             </View>
@@ -218,6 +226,9 @@ const styles = StyleSheet.create({
   processingFeeNote: { color: brand.muted, fontSize: 9, lineHeight: 14, marginTop: 8 },
   payButton: { alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 9, marginTop: 12, paddingHorizontal: 13, paddingVertical: 10 },
   payButtonText: { color: '#fff', fontSize: 10, fontWeight: '900' },
+  jobActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 },
+  secondaryAction: { alignSelf: 'flex-start', backgroundColor: '#F4F1ED', borderRadius: 9, paddingHorizontal: 11, paddingVertical: 8 },
+  secondaryActionText: { color: brand.orangeDark, fontSize: 9, fontWeight: '900' },
   noProposals: { color: brand.muted, fontSize: 10, lineHeight: 16, paddingTop: 11 },
   cancelLink: { alignSelf: 'flex-start', marginTop: 12, paddingVertical: 5 },
   cancelLinkText: { color: '#A23B27', fontSize: 9, fontWeight: '800' },

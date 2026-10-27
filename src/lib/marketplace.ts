@@ -64,6 +64,8 @@ export type VerifiedServiceCard = {
   icon: string;
   color: string;
   priceLabel: string;
+  ratingAverage: number | null;
+  ratingCount: number;
 };
 
 export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]> {
@@ -77,12 +79,15 @@ export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]
   if (!services?.length) return [];
 
   const workerIds = [...new Set(services.map((service) => service.worker_id))];
-  const { data: profiles, error: profilesError } = await supabase.from('profiles')
-    .select('id, public_name, city')
-    .in('id', workerIds);
+  const [{ data: profiles, error: profilesError }, { data: ratings, error: ratingsError }] = await Promise.all([
+    supabase.from('profiles').select('id, public_name, city').in('id', workerIds),
+    supabase.rpc('get_public_worker_ratings', { p_worker_ids: workerIds }),
+  ]);
   if (profilesError) throw profilesError;
+  if (ratingsError) throw ratingsError;
 
   const profileById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+  const ratingsByWorker = new Map((ratings ?? []).map((rating: { worker_id: string; average_rating: number; review_count: number }) => [rating.worker_id, rating]));
   const categoryById = new Map(Object.entries(categoryIds).map(([name, id]) => [id, name]));
   const categoryMetaByName = new Map(categories.map((category) => [category.name, category]));
   const priceUnitLabel: Record<string, string> = {
@@ -105,6 +110,8 @@ export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]
       title: service.title,
       city: service.city || profile.city || 'Rio Grande do Sul',
       category,
+      ratingAverage: ratingsByWorker.has(service.worker_id) ? Number(ratingsByWorker.get(service.worker_id)?.average_rating) : null,
+      ratingCount: Number(ratingsByWorker.get(service.worker_id)?.review_count ?? 0),
       icon: categoryMeta?.icon ?? '✦',
       color: categoryMeta?.color ?? '#E8C6A7',
       priceLabel: startingPrice === null
@@ -230,6 +237,173 @@ export async function createMercadoPagoCheckout(proposalId: string): Promise<str
   return data.checkoutUrl;
 }
 
+export type JobChat = {
+  id: string;
+  title: string;
+  status: ClientJob['status'];
+  isClient: boolean;
+  otherPartyName: string;
+  messages: { id: string; senderId: string; body: string; createdAt: string }[];
+};
+
+export async function getJobChat(jobId: string): Promise<JobChat> {
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData.user) throw new Error('Entre na sua conta para abrir a conversa.');
+  const { data: job, error: jobError } = await supabase.from('job_requests')
+    .select('id, client_id, assigned_worker_id, status, description')
+    .eq('id', jobId).single();
+  if (jobError) throw new Error('Esta conversa não está disponível para sua conta.');
+  if (!job.assigned_worker_id || !['in_progress', 'completion_pending', 'completed'].includes(job.status)) {
+    throw new Error('A conversa abre depois que a contratação for confirmada.');
+  }
+  const otherPartyId = authData.user.id === job.client_id ? job.assigned_worker_id : job.client_id;
+  const [{ data: otherParty, error: profileError }, { data: messages, error: messagesError }] = await Promise.all([
+    supabase.from('profiles').select('public_name').eq('id', otherPartyId).single(),
+    supabase.from('job_messages').select('id, sender_id, body, created_at').eq('job_id', jobId).order('created_at', { ascending: true }),
+  ]);
+  if (profileError) throw profileError;
+  if (messagesError) throw messagesError;
+  return {
+    id: job.id,
+    title: job.description.split(/[.!?\n]/)[0].slice(0, 100) || 'Serviço contratado',
+    status: job.status,
+    isClient: authData.user.id === job.client_id,
+    otherPartyName: otherParty.public_name,
+    messages: (messages ?? []).map((message) => ({ id: message.id, senderId: message.sender_id, body: message.body, createdAt: message.created_at })),
+  };
+}
+
+export async function sendJobMessage(jobId: string, body: string) {
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) throw new Error('Entre na sua conta para enviar mensagens.');
+  const { error: sendError } = await supabase.from('job_messages').insert({ job_id: jobId, sender_id: data.user.id, body: body.trim() });
+  if (sendError) throw sendError;
+}
+
+export async function requestJobCompletion(jobId: string) {
+  const { error } = await supabase.rpc('request_job_completion', { p_job_id: jobId });
+  if (error) throw error;
+}
+
+export async function confirmJobCompletion(jobId: string) {
+  const { error } = await supabase.rpc('confirm_job_completion', { p_job_id: jobId });
+  if (error) throw error;
+}
+
+export async function submitJobReview(jobId: string, rating: number, comment: string) {
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) throw new Error('Entre na sua conta para avaliar.');
+  const { data: job, error: jobError } = await supabase.from('job_requests')
+    .select('client_id, assigned_worker_id, status').eq('id', jobId).single();
+  if (jobError) throw jobError;
+  if (job.status !== 'completed' || !job.assigned_worker_id) throw new Error('Você poderá avaliar após a conclusão confirmada.');
+  const subjectId = data.user.id === job.client_id ? job.assigned_worker_id : job.client_id;
+  const { error: reviewError } = await supabase.from('job_reviews').insert({
+    job_id: jobId,
+    reviewer_id: data.user.id,
+    subject_id: subjectId,
+    rating,
+    comment: comment.trim(),
+  });
+  if (reviewError) throw reviewError;
+}
+
+export async function getJobReviewContext(jobId: string) {
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData.user) throw new Error('Entre na sua conta para avaliar.');
+  const { data: job, error: jobError } = await supabase.from('job_requests')
+    .select('client_id, assigned_worker_id, status').eq('id', jobId).single();
+  if (jobError) throw new Error('Este serviço não está disponível para sua conta.');
+  if (job.status !== 'completed' || !job.assigned_worker_id) throw new Error('As avaliações ficam disponíveis após a conclusão confirmada.');
+  const subjectId = authData.user.id === job.client_id ? job.assigned_worker_id : job.client_id;
+  const [{ data: subject, error: subjectError }, { data: review, error: reviewError }] = await Promise.all([
+    supabase.from('profiles').select('public_name').eq('id', subjectId).single(),
+    supabase.from('job_reviews').select('id').eq('job_id', jobId).eq('reviewer_id', authData.user.id).maybeSingle(),
+  ]);
+  if (subjectError) throw subjectError;
+  if (reviewError) throw reviewError;
+  return { subjectName: subject.public_name as string, alreadyReviewed: Boolean(review) };
+}
+
+export type JobDispute = { id: string; reason: string; details: string; status: 'open' | 'resolved' | 'closed'; resolution: string | null };
+
+export async function getJobDispute(jobId: string): Promise<JobDispute | null> {
+  const { data, error } = await supabase.from('job_disputes')
+    .select('id, reason, details, status, resolution').eq('job_id', jobId).maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export type SupportDispute = JobDispute & { jobId: string; openedByName: string; clientName: string; workerName: string; jobTitle: string; city: string };
+
+export async function getSupportDisputes(userId: string): Promise<SupportDispute[]> {
+  const role = await getReviewerRole(userId);
+  if (role !== 'owner' && role !== 'support') throw new Error('Somente owner ou suporte pode revisar solicitações.');
+  const { data: disputes, error: disputeError } = await supabase.from('job_disputes')
+    .select('id, job_id, opened_by, reason, details, status, resolution').eq('status', 'open').order('created_at', { ascending: true });
+  if (disputeError) throw disputeError;
+  if (!disputes?.length) return [];
+  const jobIds = disputes.map((item) => item.job_id);
+  const { data: jobs, error: jobsError } = await supabase.from('job_requests')
+    .select('id, client_id, assigned_worker_id, description, city').in('id', jobIds);
+  if (jobsError) throw jobsError;
+  const profileIds = [...new Set([
+    ...disputes.map((item) => item.opened_by),
+    ...(jobs ?? []).flatMap((job) => [job.client_id, job.assigned_worker_id].filter(Boolean) as string[]),
+  ])];
+  const { data: profiles, error: profilesError } = await supabase.from('profiles').select('id, public_name').in('id', profileIds);
+  if (profilesError) throw profilesError;
+  const jobById = new Map((jobs ?? []).map((job) => [job.id, job]));
+  const profileById = new Map((profiles ?? []).map((profile) => [profile.id, profile.public_name]));
+  return disputes.map((item) => {
+    const job = jobById.get(item.job_id);
+    return {
+      id: item.id, jobId: item.job_id, reason: item.reason, details: item.details,
+      status: item.status, resolution: item.resolution,
+      openedByName: profileById.get(item.opened_by) ?? 'Usuário CONTRATEI',
+      clientName: profileById.get(job?.client_id ?? '') ?? 'Contratante',
+      workerName: profileById.get(job?.assigned_worker_id ?? '') ?? 'Profissional',
+      jobTitle: job?.description.split(/[.!?\n]/)[0].slice(0, 100) ?? 'Serviço contratado',
+      city: job?.city ?? '',
+    };
+  });
+}
+
+export async function resolveJobDispute(disputeId: string, resolution: string) {
+  const { data, error: authError } = await supabase.auth.getUser();
+  if (authError || !data.user) throw new Error('Entre na conta de suporte para responder.');
+  const { data: updated, error } = await supabase.from('job_disputes').update({
+    status: 'resolved', resolution: resolution.trim(), resolved_by: data.user.id,
+  }).eq('id', disputeId).eq('status', 'open').select('id').maybeSingle();
+  if (error) throw error;
+  if (!updated) throw new Error('Esta solicitação já foi respondida. Atualize a fila.');
+}
+
+export type AppNotification = { id: string; jobId: string | null; type: string; title: string; summary: string; readAt: string | null; createdAt: string };
+
+export async function getMyNotifications(userId: string): Promise<AppNotification[]> {
+  const { data, error } = await supabase.from('app_notifications')
+    .select('id, job_id, type, title, summary, read_at, created_at')
+    .eq('user_id', userId).order('created_at', { ascending: false }).limit(100);
+  if (error) throw error;
+  return (data ?? []).map((item) => ({
+    id: item.id, jobId: item.job_id, type: item.type, title: item.title,
+    summary: item.summary, readAt: item.read_at, createdAt: item.created_at,
+  }));
+}
+
+export async function markNotificationRead(notificationId: string) {
+  const { error } = await supabase.from('app_notifications').update({ read_at: new Date().toISOString() }).eq('id', notificationId);
+  if (error) throw error;
+}
+
+export async function openJobDispute(jobId: string, reason: string, details: string) {
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) throw new Error('Entre na sua conta para solicitar suporte.');
+  const { error: insertError } = await supabase.from('job_disputes').insert({ job_id: jobId, opened_by: data.user.id, reason, details: details.trim() });
+  if (insertError) throw insertError;
+}
+
 export type ClientProposal = {
   id: string;
   workerName: string;
@@ -247,7 +421,7 @@ export type ClientJob = {
   title: string;
   category: string;
   city: string;
-  status: 'open' | 'awaiting_payment' | 'in_progress' | 'completed' | 'cancelled';
+  status: 'open' | 'awaiting_payment' | 'in_progress' | 'completion_pending' | 'completed' | 'cancelled';
   createdAt: string;
   proposals: ClientProposal[];
 };
@@ -257,7 +431,7 @@ export type WorkerProposal = ClientProposal & {
   jobTitle: string;
   category: string;
   jobCity: string;
-  jobStatus: 'open' | 'awaiting_payment' | 'in_progress' | 'completed' | 'cancelled' | 'unavailable';
+  jobStatus: 'open' | 'awaiting_payment' | 'in_progress' | 'completion_pending' | 'completed' | 'cancelled' | 'unavailable';
 };
 
 export async function getWorkerProposals(workerId: string): Promise<WorkerProposal[]> {

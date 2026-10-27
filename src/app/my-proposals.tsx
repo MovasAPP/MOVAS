@@ -8,7 +8,7 @@ import { Page } from '@/components/Page';
 import { SectionTitle } from '@/components/SectionTitle';
 import { brand } from '@/constants/brand';
 import { useAuth } from '@/lib/auth';
-import { getWorkerProposals, withdrawProposal, type WorkerProposal } from '@/lib/marketplace';
+import { getWorkerProposals, requestJobCompletion, withdrawProposal, type WorkerProposal } from '@/lib/marketplace';
 
 const proposalLabel: Record<WorkerProposal['status'], string> = {
   pending: 'Aguardando resposta',
@@ -21,6 +21,7 @@ const jobLabel: Record<WorkerProposal['jobStatus'], string> = {
   open: 'Pedido aberto',
   awaiting_payment: 'Aguardando pagamento do contratante',
   in_progress: 'Trabalho em andamento',
+  completion_pending: 'Aguardando confirmação do contratante',
   completed: 'Trabalho concluído',
   cancelled: 'Pedido cancelado',
   unavailable: 'Pedido indisponível',
@@ -33,6 +34,7 @@ export default function MyProposalsScreen() {
   const [proposals, setProposals] = useState<WorkerProposal[] | null>(null);
   const [error, setError] = useState('');
   const [busyProposal, setBusyProposal] = useState<string | null>(null);
+  const [busyCompletion, setBusyCompletion] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -59,6 +61,20 @@ export default function MyProposalsScreen() {
       setError(withdrawError instanceof Error ? withdrawError.message : 'Não foi possível retirar a proposta.');
     } finally {
       setBusyProposal(null);
+    }
+  }
+
+  async function markComplete(jobId: string) {
+    if (busyCompletion) return;
+    setBusyCompletion(jobId);
+    setError('');
+    try {
+      await requestJobCompletion(jobId);
+      setProposals((current) => current?.map((proposal) => proposal.jobId === jobId ? { ...proposal, jobStatus: 'completion_pending' } : proposal) ?? []);
+    } catch (completionError) {
+      setError(completionError instanceof Error ? completionError.message : 'Não foi possível solicitar a confirmação de conclusão.');
+    } finally {
+      setBusyCompletion(null);
     }
   }
 
@@ -94,6 +110,12 @@ export default function MyProposalsScreen() {
                   </View>
                   <Text style={styles.date}>Enviada em {new Date(proposal.createdAt).toLocaleDateString('pt-BR')}</Text>
                   {proposal.status === 'pending' && proposal.jobStatus === 'open' ? <Pressable disabled={busyProposal === proposal.id} onPress={() => void withdraw(proposal.id)} style={styles.withdrawButton}><Text style={styles.withdrawText}>{busyProposal === proposal.id ? 'Retirando…' : 'Retirar proposta'}</Text></Pressable> : null}
+                  {proposal.status === 'accepted' && ['in_progress', 'completion_pending', 'completed'].includes(proposal.jobStatus) ? <View style={styles.jobActions}>
+                    <Pressable onPress={() => router.push({ pathname: '/chat', params: { jobId: proposal.jobId } })} style={styles.secondaryButton}><Text style={styles.secondaryButtonText}>Abrir conversa</Text></Pressable>
+                    {proposal.jobStatus === 'in_progress' ? <Pressable disabled={busyCompletion === proposal.jobId} onPress={() => void markComplete(proposal.jobId)} style={styles.completeButton}><Text style={styles.completeButtonText}>{busyCompletion === proposal.jobId ? 'Enviando…' : 'Marcar como concluído'}</Text></Pressable> : null}
+                    {proposal.jobStatus === 'completion_pending' ? <Text style={styles.pendingCompletion}>Aguardando o contratante confirmar.</Text> : null}
+                    {proposal.jobStatus === 'completed' ? <Pressable onPress={() => router.push({ pathname: '/review-job', params: { jobId: proposal.jobId } })} style={styles.secondaryButton}><Text style={styles.secondaryButtonText}>Avaliar contratante</Text></Pressable> : null}
+                  </View> : null}
                 </View>
               ))}
             </View>
@@ -140,5 +162,11 @@ const styles = StyleSheet.create({
   date: { color: brand.muted, fontSize: 8, marginTop: 9 },
   withdrawButton: { alignSelf: 'flex-start', borderColor: brand.border, borderRadius: 8, borderWidth: 1, marginTop: 10, paddingHorizontal: 10, paddingVertical: 7 },
   withdrawText: { color: brand.muted, fontSize: 9, fontWeight: '800' },
+  jobActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
+  secondaryButton: { backgroundColor: '#F4F1ED', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 },
+  secondaryButtonText: { color: brand.orangeDark, fontSize: 9, fontWeight: '900' },
+  completeButton: { backgroundColor: brand.orange, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 },
+  completeButtonText: { color: '#fff', fontSize: 9, fontWeight: '900' },
+  pendingCompletion: { alignSelf: 'center', color: brand.muted, fontSize: 9 },
   disclaimer: { color: brand.muted, fontSize: 9, lineHeight: 14, marginBottom: 15, marginTop: 18, maxWidth: 700 },
 });
