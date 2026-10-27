@@ -1,5 +1,6 @@
 create table public.job_payments (
   id uuid primary key default gen_random_uuid(),
+  attempt_id uuid not null default gen_random_uuid() unique,
   job_id uuid not null references public.job_requests (id) on delete restrict,
   proposal_id uuid not null references public.job_proposals (id) on delete restrict,
   client_id uuid not null references public.profiles (id) on delete restrict,
@@ -55,6 +56,7 @@ using (client_id = (select auth.uid()) or worker_id = (select auth.uid()));
 create or replace function public.prepare_job_payment(p_client_id uuid, p_proposal_id uuid)
 returns table (
   payment_id uuid,
+  attempt_id uuid,
   job_id uuid,
   proposal_id uuid,
   worker_id uuid,
@@ -99,8 +101,8 @@ begin
       raise exception 'Este pedido já está aguardando outro pagamento.';
     end if;
     if v_payment.status = 'pending' and v_payment.checkout_url is not null then
-      return query select v_payment.id, v_payment.job_id, v_payment.proposal_id, v_payment.worker_id,
-        v_payment.service_amount, v_payment.platform_fee, v_payment.customer_total, v_payment.checkout_url;
+      return query select v_payment.id, v_payment.attempt_id, v_payment.job_id, v_payment.proposal_id,
+        v_payment.worker_id, v_payment.service_amount, v_payment.platform_fee, v_payment.customer_total, v_payment.checkout_url;
       return;
     end if;
     raise exception 'O checkout ainda está sendo preparado. Tente novamente em instantes.';
@@ -110,6 +112,7 @@ begin
       raise exception 'Já existe um pagamento ativo para esta proposta.';
     end if;
     update public.job_payments set
+      attempt_id = gen_random_uuid(),
       service_amount = v_proposal.amount,
       status = 'creating',
       provider_preference_id = null,
@@ -125,8 +128,8 @@ begin
 
   update public.job_requests set status = 'awaiting_payment' where id = v_job.id;
 
-  return query select v_payment.id, v_payment.job_id, v_payment.proposal_id, v_payment.worker_id,
-    v_payment.service_amount, v_payment.platform_fee, v_payment.customer_total, null::text;
+  return query select v_payment.id, v_payment.attempt_id, v_payment.job_id, v_payment.proposal_id,
+    v_payment.worker_id, v_payment.service_amount, v_payment.platform_fee, v_payment.customer_total, null::text;
 end;
 $$;
 
@@ -172,7 +175,7 @@ end;
 $$;
 
 create or replace function public.apply_mercado_pago_payment(
-  p_payment_id uuid,
+  p_attempt_id uuid,
   p_provider_payment_id text,
   p_status text,
   p_transaction_amount numeric,
@@ -195,8 +198,8 @@ begin
   end if;
   if p_provider_payment_id is null or p_provider_payment_id = '' then raise exception 'Payment identifier required'; end if;
 
-  select * into v_payment from public.job_payments p where p.id = p_payment_id for update;
-  if not found then raise exception 'Payment attempt not found'; end if;
+  select * into v_payment from public.job_payments p where p.attempt_id = p_attempt_id for update;
+  if not found then return; end if;
   select a.provider_user_id into v_provider_seller_id
   from public.payment_provider_accounts a where a.user_id = v_payment.worker_id;
   if v_provider_seller_id is null or v_provider_seller_id <> p_provider_seller_id then raise exception 'Seller account mismatch'; end if;

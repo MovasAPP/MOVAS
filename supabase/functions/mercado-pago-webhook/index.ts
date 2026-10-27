@@ -49,8 +49,8 @@ Deno.serve(async (request) => {
     if (String(payment.collector_id) !== providerUserId || payment.currency_id !== 'BRL') {
       return jsonResponse({ error: 'Payment seller or currency mismatch.' }, 400);
     }
-    const reference = String(payment.external_reference ?? '');
-    if (!/^[0-9a-f-]{36}$/i.test(reference)) return jsonResponse({ received: true });
+    const attemptId = String(payment.external_reference ?? '');
+    if (!/^[0-9a-f-]{36}$/i.test(attemptId)) return jsonResponse({ received: true });
     const mappedStatus: Record<string, string> = {
       pending: 'pending',
       approved: 'approved',
@@ -65,7 +65,7 @@ Deno.serve(async (request) => {
     const processingFee = fees.filter((fee: { type?: string }) => fee.type === 'mercadopago_fee')
       .reduce((total: number, fee: { amount?: number }) => total + Number(fee.amount ?? 0), 0);
     const { error: applyError } = await admin.rpc('apply_mercado_pago_payment', {
-      p_payment_id: reference,
+      p_attempt_id: attemptId,
       p_provider_payment_id: String(payment.id),
       p_status: status,
       p_transaction_amount: Number(payment.transaction_amount),

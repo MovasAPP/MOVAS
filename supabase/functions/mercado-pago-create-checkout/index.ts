@@ -24,7 +24,7 @@ Deno.serve(async (request) => {
     if (prepareError || !prepared?.length) {
       return jsonResponse({ error: prepareError?.message || 'Não foi possível iniciar este pagamento.' }, 409);
     }
-    const payment = prepared[0] as { payment_id: string; proposal_id: string; job_id: string; worker_id: string; service_amount: number; platform_fee: number; customer_total: number; checkout_url: string | null };
+    const payment = prepared[0] as { payment_id: string; attempt_id: string; proposal_id: string; job_id: string; worker_id: string; service_amount: number; platform_fee: number; customer_total: number; checkout_url: string | null };
     paymentId = payment.payment_id;
     if (payment.checkout_url) {
       return jsonResponse({ checkoutUrl: payment.checkout_url, customerTotal: Number(payment.customer_total), serviceAmount: Number(payment.service_amount), platformFee: Number(payment.platform_fee) });
@@ -42,7 +42,7 @@ Deno.serve(async (request) => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
-        'X-Idempotency-Key': payment.payment_id,
+        'X-Idempotency-Key': payment.attempt_id,
       },
       body: JSON.stringify({
         items: [{
@@ -53,7 +53,7 @@ Deno.serve(async (request) => {
           unit_price: Number(payment.customer_total),
         }],
         marketplace_fee: Number(payment.platform_fee),
-        external_reference: payment.payment_id,
+        external_reference: payment.attempt_id,
         notification_url: webhookUrl,
         back_urls: returnPlatform === 'native' ? {
           success: 'contratei://my-requests?payment=success',
