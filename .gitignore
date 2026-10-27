@@ -36,6 +36,7 @@ yarn-error.*
 
 # Local evidence files are kept out of the product repository
 supabase-migration-confirmed.png
+supabase/.temp/
 
 # typescript
 *.tsbuildinfo
