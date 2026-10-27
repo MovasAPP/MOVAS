@@ -25,9 +25,11 @@ Deno.serve(async (request) => {
   if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed.' }, 405);
   try {
     const payload = await request.json().catch(() => ({}));
-    const dataId = String(payload?.data?.id ?? new URL(request.url).searchParams.get('data.id') ?? '');
-    const topic = String(payload?.type ?? payload?.topic ?? new URL(request.url).searchParams.get('topic') ?? '');
-    if (topic !== 'payment' || !/^\d+$/.test(dataId)) return jsonResponse({ received: true });
+    const url = new URL(request.url);
+    const dataId = url.searchParams.get('data.id') ?? '';
+    const topic = String(payload?.type ?? payload?.topic ?? url.searchParams.get('topic') ?? '');
+    if (topic !== 'payment') return jsonResponse({ received: true });
+    if (!/^\d+$/.test(dataId)) return jsonResponse({ error: 'Missing or invalid payment identifier.' }, 400);
 
     const secret = Deno.env.get('MP_WEBHOOK_SECRET');
     if (!secret || !(await validSignature(request, dataId, secret))) return jsonResponse({ error: 'Invalid webhook signature.' }, 401);
