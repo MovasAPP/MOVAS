@@ -11,8 +11,9 @@ function resultResponse(platform: string | null, result: 'connected' | 'cancelle
     try {
       const destination = new URL(site);
       if (destination.protocol === 'https:') {
-        destination.searchParams.set('mercado_pago', result);
-        return Response.redirect(destination.toString(), 303);
+        const returnUrl = new URL('/oauth', destination);
+        returnUrl.searchParams.set('mercado_pago', result);
+        return Response.redirect(returnUrl.toString(), 303);
       }
     } catch {
       // Fall through to an informational page if the configured site URL is invalid.
