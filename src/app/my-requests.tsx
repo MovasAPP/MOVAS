@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 
 import { BrandHeader } from '@/components/BrandHeader';
 import { Page } from '@/components/Page';
@@ -7,10 +9,11 @@ import { AuthModal } from '@/components/AuthModal';
 import { SectionTitle } from '@/components/SectionTitle';
 import { brand } from '@/constants/brand';
 import { useAuth } from '@/lib/auth';
-import { cancelOpenJobRequest, getClientJobsWithProposals, type ClientJob } from '@/lib/marketplace';
+import { cancelOpenJobRequest, createMercadoPagoCheckout, getClientJobsWithProposals, type ClientJob } from '@/lib/marketplace';
 
 const jobStatusLabel: Record<ClientJob['status'], string> = {
   open: 'Recebendo propostas',
+  awaiting_payment: 'Aguardando pagamento',
   in_progress: 'Em andamento',
   completed: 'Concluído',
   cancelled: 'Cancelado',
@@ -30,8 +33,9 @@ export default function MyRequestsScreen() {
   const [error, setError] = useState('');
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
   const [busyCancelId, setBusyCancelId] = useState<string | null>(null);
+  const [busyPaymentId, setBusyPaymentId] = useState<string | null>(null);
 
-  useEffect(() => {
+  const refreshJobs = useCallback(() => {
     let active = true;
     if (!user) {
       return () => { active = false; };
@@ -46,6 +50,23 @@ export default function MyRequestsScreen() {
     });
     return () => { active = false; };
   }, [user]);
+
+  useFocusEffect(useCallback(() => refreshJobs(), [refreshJobs]));
+
+  async function payProposal(proposalId: string) {
+    if (busyPaymentId) return;
+    setBusyPaymentId(proposalId);
+    setError('');
+    try {
+      const checkoutUrl = await createMercadoPagoCheckout(proposalId);
+      if (Platform.OS === 'web') window.location.assign(checkoutUrl);
+      else await WebBrowser.openBrowserAsync(checkoutUrl);
+    } catch (paymentError) {
+      setError(paymentError instanceof Error ? paymentError.message : 'Não foi possível iniciar o checkout.');
+    } finally {
+      setBusyPaymentId(null);
+    }
+  }
 
   async function cancelJob(jobId: string) {
     if (busyCancelId) return;
@@ -116,6 +137,11 @@ export default function MyRequestsScreen() {
                         <View><Text style={styles.priceLabel}>Valor do profissional</Text><Text style={styles.price}>{money(proposal.amount)}</Text></View>
                         <View style={styles.totalBox}><Text style={styles.totalLabel}>Total com taxa CONTRATEI (10%)</Text><Text style={styles.total}>{money(proposal.customerTotal)}</Text></View>
                       </View>
+                      {job.status === 'open' && proposal.status === 'pending' ? (
+                        <Pressable disabled={busyPaymentId !== null} onPress={() => void payProposal(proposal.id)} style={[styles.payButton, busyPaymentId !== null && { opacity: 0.65 }]}>
+                          <Text style={styles.payButtonText}>{busyPaymentId === proposal.id ? 'Preparando pagamento…' : `Contratar e pagar ${money(proposal.customerTotal)}`}</Text>
+                        </Pressable>
+                      ) : null}
                     </View>
                   )) : (
                     <Text style={styles.noProposals}>Assim que um profissional responder, a proposta aparecerá aqui.</Text>
@@ -181,6 +207,8 @@ const styles = StyleSheet.create({
   totalBox: { backgroundColor: brand.orangeSoft, borderRadius: 9, paddingHorizontal: 10, paddingVertical: 7 },
   totalLabel: { color: brand.orangeDark, fontSize: 8, fontWeight: '700' },
   total: { color: brand.orangeDark, fontSize: 14, fontWeight: '900', marginTop: 3 },
+  payButton: { alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 9, marginTop: 12, paddingHorizontal: 13, paddingVertical: 10 },
+  payButtonText: { color: '#fff', fontSize: 10, fontWeight: '900' },
   noProposals: { color: brand.muted, fontSize: 10, lineHeight: 16, paddingTop: 11 },
   cancelLink: { alignSelf: 'flex-start', marginTop: 12, paddingVertical: 5 },
   cancelLinkText: { color: '#A23B27', fontSize: 9, fontWeight: '800' },

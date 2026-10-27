@@ -109,7 +109,7 @@ export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]
       color: categoryMeta?.color ?? '#E8C6A7',
       priceLabel: startingPrice === null
         ? priceUnitLabel[service.price_unit] ?? 'Orçamento personalizado'
-        : `A partir de ${startingPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`,
+        : `A partir de ${(startingPrice * 1.1).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} com taxa CONTRATEI incluída`,
     }];
   });
 }
@@ -205,6 +205,31 @@ export async function cancelOpenJobRequest(jobId: string) {
   if (error) throw error;
 }
 
+export async function getMercadoPagoConnectionStatus(): Promise<{ connected: boolean; connectedAt: string | null }> {
+  const { data, error } = await supabase.functions.invoke('mercado-pago-connection-status', { body: {} });
+  if (error) throw error;
+  if (typeof data?.connected !== 'boolean') throw new Error('Resposta inválida ao consultar a conexão de recebimentos.');
+  return { connected: data.connected, connectedAt: data.connectedAt ?? null };
+}
+
+export async function startMercadoPagoConnection(platform: 'web' | 'native'): Promise<string> {
+  const { data, error } = await supabase.functions.invoke('mercado-pago-oauth-start', { body: { platform } });
+  if (error) throw error;
+  if (typeof data?.authorizationUrl !== 'string') {
+    throw new Error(data?.error || 'Não foi possível iniciar a conexão com o Mercado Pago.');
+  }
+  return data.authorizationUrl;
+}
+
+export async function createMercadoPagoCheckout(proposalId: string): Promise<string> {
+  const { data, error } = await supabase.functions.invoke('mercado-pago-create-checkout', { body: { proposalId } });
+  if (error) throw error;
+  if (typeof data?.checkoutUrl !== 'string' || !data.checkoutUrl.startsWith('https://')) {
+    throw new Error(data?.error || 'Não foi possível iniciar o pagamento.');
+  }
+  return data.checkoutUrl;
+}
+
 export type ClientProposal = {
   id: string;
   workerName: string;
@@ -222,7 +247,7 @@ export type ClientJob = {
   title: string;
   category: string;
   city: string;
-  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
+  status: 'open' | 'awaiting_payment' | 'in_progress' | 'completed' | 'cancelled';
   createdAt: string;
   proposals: ClientProposal[];
 };
@@ -232,7 +257,7 @@ export type WorkerProposal = ClientProposal & {
   jobTitle: string;
   category: string;
   jobCity: string;
-  jobStatus: 'open' | 'in_progress' | 'completed' | 'cancelled' | 'unavailable';
+  jobStatus: 'open' | 'awaiting_payment' | 'in_progress' | 'completed' | 'cancelled' | 'unavailable';
 };
 
 export async function getWorkerProposals(workerId: string): Promise<WorkerProposal[]> {

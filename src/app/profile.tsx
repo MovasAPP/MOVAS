@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
 import { useRouter } from 'expo-router';
 
 import { BrandHeader } from '@/components/BrandHeader';
@@ -9,7 +10,8 @@ import { AuthModal } from '@/components/AuthModal';
 import { brand, categories } from '@/constants/brand';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-import { activateProfessionalProfile, getProfessionalProfile, getReviewerRole, type ProfessionalProfile } from '@/lib/marketplace';
+import { activateProfessionalProfile, getMercadoPagoConnectionStatus, getProfessionalProfile, getReviewerRole, startMercadoPagoConnection, type ProfessionalProfile } from '@/lib/marketplace';
+import { parseBrazilianAmount } from '@/lib/format';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -27,7 +29,12 @@ export default function ProfileScreen() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [canReview, setCanReview] = useState(false);
+  const [mercadoPagoConnected, setMercadoPagoConnected] = useState<boolean | null>(null);
+  const [mercadoPagoBusy, setMercadoPagoBusy] = useState(false);
+  const [mercadoPagoError, setMercadoPagoError] = useState('');
   const displayName = user?.user_metadata.public_name || user?.email?.split('@')[0] || 'Seu perfil CONTRATEI';
+  const parsedProfilePrice = parseBrazilianAmount(price);
+  const pricePreviewAmount = parsedProfilePrice !== null && Number.isFinite(parsedProfilePrice) ? parsedProfilePrice : null;
 
   useEffect(() => {
     let active = true;
@@ -46,6 +53,20 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     let active = true;
+    if (!user || profileUserId !== user.id || profile?.verificationStatus !== 'verified') {
+      setMercadoPagoConnected(null);
+      return () => { active = false; };
+    }
+    void getMercadoPagoConnectionStatus().then(({ connected }) => {
+      if (active) setMercadoPagoConnected(connected);
+    }).catch(() => {
+      if (active) setMercadoPagoConnected(null);
+    });
+    return () => { active = false; };
+  }, [user, profileUserId, profile?.verificationStatus]);
+
+  useEffect(() => {
+    let active = true;
     if (!user) return () => { active = false; };
     void Promise.resolve().then(() => getReviewerRole(user.id)).then((role) => {
       if (active) setCanReview(role === 'owner' || role === 'verifier');
@@ -60,8 +81,7 @@ export default function ProfileScreen() {
     if (!category) { setError('Escolha a categoria do seu serviço.'); return; }
     if (serviceTitle.trim().length < 3) { setError('Informe um título com pelo menos 3 caracteres.'); return; }
     if (!city.trim()) { setError('Informe a cidade onde você atende.'); return; }
-    const amountText = price.trim().replace(/[^\d,.-]/g, '').replace(',', '.');
-    const amount = amountText ? Number(amountText) : null;
+    const amount = parseBrazilianAmount(price);
     if (amount !== null && (!Number.isFinite(amount) || amount < 0)) { setError('Confira o preço informado.'); return; }
     setBusy(true);
     setError('');
@@ -88,6 +108,36 @@ export default function ProfileScreen() {
       setError(saveError instanceof Error ? saveError.message : 'Não foi possível salvar seu perfil. Tente novamente.');
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function connectMercadoPago() {
+    if (!user) { setAuthOpen(true); return; }
+    setMercadoPagoBusy(true);
+    setMercadoPagoError('');
+    try {
+      const authorizationUrl = await startMercadoPagoConnection(Platform.OS === 'web' ? 'web' : 'native');
+      if (Platform.OS === 'web') {
+        if (typeof window !== 'undefined') window.location.assign(authorizationUrl);
+        return;
+      }
+      const result = await WebBrowser.openAuthSessionAsync(authorizationUrl, Linking.createURL('oauth'));
+      if (result.type === 'success') {
+        const callback = new URL(result.url);
+        if (callback.searchParams.get('mercado_pago') === 'connected') {
+          const status = await getMercadoPagoConnectionStatus();
+          setMercadoPagoConnected(status.connected);
+          setMessage('Conta Mercado Pago conectada. A cobrança pelo app ainda está em configuração.');
+        } else if (callback.searchParams.get('mercado_pago') === 'cancelled') {
+          setMercadoPagoError('A autorização foi cancelada. Você pode tentar novamente quando quiser.');
+        } else {
+          setMercadoPagoError('Não foi possível confirmar a conexão. Verifique o status e tente novamente.');
+        }
+      }
+    } catch (connectionError) {
+      setMercadoPagoError(connectionError instanceof Error ? connectionError.message : 'Não foi possível conectar o Mercado Pago.');
+    } finally {
+      setMercadoPagoBusy(false);
     }
   }
 
@@ -141,6 +191,14 @@ export default function ProfileScreen() {
               </View>
             </View>
             {currentProfile?.canWork && status !== 'verified' ? <Pressable onPress={() => router.push('/verification')} style={styles.verifyLink}><Text style={styles.verifyLinkText}>{status === 'pending' ? 'Acompanhar análise →' : status === 'rejected' ? 'Corrigir documentos →' : 'Enviar documentos →'}</Text></Pressable> : null}
+            {currentProfile?.canWork && status === 'verified' ? <View style={styles.paymentPanel}>
+              <Text style={styles.formTitle}>Recebimentos pelo Mercado Pago</Text>
+              <Text style={styles.formHint}>Conecte sua conta Mercado Pago para preparar recebimentos pelo Checkout Pro. O CONTRATEI não vê sua senha nem os dados do cartão.</Text>
+              <Text style={[styles.paymentStatus, mercadoPagoConnected ? styles.paymentConnected : null]}>{mercadoPagoConnected === null ? 'Status da conexão indisponível' : mercadoPagoConnected ? '✓ Conta Mercado Pago conectada' : 'Conta Mercado Pago não conectada'}</Text>
+              <Pressable disabled={mercadoPagoBusy} onPress={() => void connectMercadoPago()} style={[styles.submitButton, mercadoPagoBusy && { opacity: 0.65 }]}><Text style={styles.submitButtonText}>{mercadoPagoBusy ? 'Abrindo Mercado Pago…' : mercadoPagoConnected ? 'Reconectar Mercado Pago' : 'Conectar Mercado Pago'}</Text></Pressable>
+              {mercadoPagoError ? <Text accessibilityRole="alert" style={styles.errorMessage}>{mercadoPagoError}</Text> : null}
+              <Text style={styles.priceHint}>A conexão prepara os recebimentos; pagamentos ainda não estão ativos.</Text>
+            </View> : null}
             {currentProfile?.services.length ? (
               <View style={styles.servicesList}>
                 <Text style={styles.formTitle}>Seus serviços cadastrados</Text>
@@ -160,7 +218,7 @@ export default function ProfileScreen() {
             <TextInput multiline onChangeText={setDescription} placeholder="Conte sua experiência e o que está incluído." placeholderTextColor="#87938E" style={[styles.input, styles.textArea]} value={description} />
             <View style={styles.inputRow}>
               <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Cidade onde atende</Text><TextInput onChangeText={setCity} placeholder="Ex.: Tramandaí" placeholderTextColor="#87938E" style={styles.input} value={city} /></View>
-              <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Preço inicial (opcional)</Text><TextInput keyboardType="decimal-pad" onChangeText={setPrice} placeholder="R$" placeholderTextColor="#87938E" style={styles.input} value={price} /></View>
+              <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Seu preço inicial (opcional)</Text><TextInput keyboardType="decimal-pad" onChangeText={setPrice} placeholder="R$" placeholderTextColor="#87938E" style={styles.input} value={price} />{pricePreviewAmount !== null && pricePreviewAmount > 0 ? <Text style={styles.priceHint}>Cliente pagará {money(pricePreviewAmount + pricePreviewAmount * 0.1)} com taxa de 10%. A tarifa Mercado Pago será descontada do seu recebimento.</Text> : <Text style={styles.priceHint}>A taxa CONTRATEI de 10% é paga pelo cliente e será mostrada separadamente.</Text>}</View>
             </View>
             <Text style={styles.fieldLabel}>Como cobra?</Text>
             <View style={styles.unitRow}>{(['quote', 'hour', 'job', 'day'] as const).map((unit) => <Pressable key={unit} onPress={() => setPriceUnit(unit)} style={[styles.unitChip, priceUnit === unit && styles.unitChipActive]}><Text style={[styles.unitText, priceUnit === unit && styles.unitTextActive]}>{unitLabel(unit)}</Text></Pressable>)}</View>
@@ -181,6 +239,10 @@ export default function ProfileScreen() {
 
 function unitLabel(unit: string) {
   return ({ quote: 'Orçamento', hour: 'Hora', job: 'Serviço', day: 'Diária' } as Record<string, string>)[unit] ?? unit;
+}
+
+function money(value: number) {
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
 const styles = StyleSheet.create({
@@ -243,6 +305,10 @@ const styles = StyleSheet.create({
   categoryChipActive: { backgroundColor: brand.orangeSoft, borderColor: brand.orange },
   categoryChipText: { color: brand.ink, fontSize: 10, fontWeight: '700' },
   input: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 10, borderWidth: 1, color: brand.ink, fontSize: 12, minHeight: 43, paddingHorizontal: 11, paddingVertical: 9 },
+  priceHint: { color: brand.muted, fontSize: 9, lineHeight: 14, marginTop: 5 },
+  paymentPanel: { backgroundColor: '#FFF9F2', borderColor: '#F2DDCB', borderRadius: 13, borderWidth: 1, marginBottom: 18, padding: 13 },
+  paymentStatus: { color: brand.muted, fontSize: 10, fontWeight: '800', marginTop: 12 },
+  paymentConnected: { color: brand.success },
   textArea: { minHeight: 72, textAlignVertical: 'top' },
   inputRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   unitRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },

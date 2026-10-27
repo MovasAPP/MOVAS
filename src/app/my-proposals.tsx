@@ -19,6 +19,7 @@ const proposalLabel: Record<WorkerProposal['status'], string> = {
 
 const jobLabel: Record<WorkerProposal['jobStatus'], string> = {
   open: 'Pedido aberto',
+  awaiting_payment: 'Aguardando pagamento do contratante',
   in_progress: 'Trabalho em andamento',
   completed: 'Trabalho concluído',
   cancelled: 'Pedido cancelado',
@@ -77,7 +78,7 @@ export default function MyProposalsScreen() {
           <View style={styles.emptyCard}><Text style={styles.cardTitle}>Você ainda não enviou propostas</Text><Text style={styles.body}>Encontre pedidos abertos e envie uma proposta para começar.</Text><Pressable onPress={() => router.push('/work')} style={styles.actionButton}><Text style={styles.actionButtonText}>Ver oportunidades</Text></Pressable></View>
         ) : (
           <>
-            <SectionTitle title={`${proposals.length} ${proposals.length === 1 ? 'proposta enviada' : 'propostas enviadas'}`} subtitle="Você recebe o valor informado; a taxa CONTRATEI de 10% é paga pelo cliente." />
+            <SectionTitle title={`${proposals.length} ${proposals.length === 1 ? 'proposta enviada' : 'propostas enviadas'}`} subtitle="O cliente paga a taxa CONTRATEI de 10%; a tarifa do Mercado Pago é descontada do seu recebimento." />
             <View style={styles.list}>
               {proposals.map((proposal) => (
                 <View key={proposal.id} style={styles.card}>
@@ -88,7 +89,7 @@ export default function MyProposalsScreen() {
                   <Text style={styles.jobStatus}>{jobLabel[proposal.jobStatus]}</Text>
                   <Text style={styles.message}>{proposal.message}</Text>
                   <View style={styles.footer}>
-                    <View><Text style={styles.meta}>Você recebe pelo serviço</Text><Text style={styles.amount}>{money(proposal.amount)}</Text></View>
+                    <View><Text style={styles.meta}>Valor do serviço (antes da tarifa MP)</Text><Text style={styles.amount}>{money(proposal.amount)}</Text></View>
                     <View style={styles.totalBox}><Text style={styles.totalLabel}>Total para o cliente*</Text><Text style={styles.total}>{money(proposal.customerTotal)}</Text></View>
                   </View>
                   <Text style={styles.date}>Enviada em {new Date(proposal.createdAt).toLocaleDateString('pt-BR')}</Text>
@@ -98,7 +99,7 @@ export default function MyProposalsScreen() {
             </View>
           </>
         )}
-        <Text style={styles.disclaimer}>*Total inclui 10% de taxa CONTRATEI, paga pelo cliente. Eventuais custos do meio de pagamento serão apresentados antes da contratação. Pagamentos ainda não estão ativos.</Text>
+        <Text style={styles.disclaimer}>*Total inclui 10% de taxa CONTRATEI, paga pelo cliente. A tarifa do Mercado Pago será descontada do recebimento do profissional e detalhada no checkout.</Text>
       </Page>
       <AuthModal visible={authOpen} onClose={() => setAuthOpen(false)} />
     </View>
