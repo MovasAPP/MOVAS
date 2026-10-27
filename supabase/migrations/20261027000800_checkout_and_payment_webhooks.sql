@@ -217,6 +217,9 @@ begin
   end if;
 
   if p_status = 'approved' then
+    if v_payment.status not in ('creating', 'pending') then
+      raise exception 'This payment attempt is no longer active';
+    end if;
     if v_job.status <> 'awaiting_payment' or v_job.assigned_worker_id is not null then
       raise exception 'Job is no longer awaiting payment';
     end if;
@@ -234,7 +237,9 @@ begin
 
   update public.job_payments set status = p_status, provider_payment_id = p_provider_payment_id,
     processing_fee = p_processing_fee where id = v_payment.id;
-  if p_status in ('rejected', 'cancelled', 'expired') and v_job.status = 'awaiting_payment' then
+  if p_status in ('rejected', 'cancelled', 'expired')
+    and v_payment.status in ('creating', 'pending')
+    and v_job.status = 'awaiting_payment' then
     update public.job_requests set status = 'open'
     where id = v_payment.job_id and assigned_worker_id is null;
   end if;
