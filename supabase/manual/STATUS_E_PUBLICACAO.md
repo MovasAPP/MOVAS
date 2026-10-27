@@ -8,9 +8,10 @@ Este documento separa o que está implementado no repositório do que já foi co
 - As migrations 001–005 foram executadas no projeto Supabase CONTRATEI, conforme o histórico do projeto.
 - O código local inclui autenticação, perfis, pedidos, propostas, verificação de identidade, revisão administrativa, pagamento preparado com Mercado Pago, conversas, avaliações, disputas e notificações.
 - A recuperação de senha por e-mail e a tela de troca de senha agora estão no app/site; ainda precisam de configuração e validação do redirecionamento no Supabase Auth.
-- As migrations 006–014 existem localmente. A migration 008 ainda não foi confirmada no banco: a API do projeto retornou que `public.job_payments` não existe. Não considerar 006–008 aplicadas até verificar sucesso no SQL Editor.
+- As migrations 006–015 existem localmente. A migration 008 ainda não foi confirmada no banco: a API do projeto retornou que `public.job_payments` não existe. Não considerar 006–008 aplicadas até verificar sucesso no SQL Editor.
 - A migration 013 permite substituir documentos de identidade preservando a cópia anterior até que o novo envio seja confirmado. Ela depende da migration 002 e ainda não foi aplicada no Supabase.
 - A migration 014 impede que webhooks atrasados reabram tentativas de pagamento em estado final. Ela depende da migration 008 e ainda não foi aplicada no Supabase.
+- A migration 015 remove a política ampla de leitura de pedidos abertos e conserva o acesso apenas para o contratante, o profissional contratado e profissionais verificados. Ela depende das migrations 003 e 010 e ainda não foi aplicada no Supabase.
 - As Edge Functions de OAuth, checkout e webhook estão no repositório, mas ainda não foram publicadas nem receberam os segredos do Mercado Pago.
 - O app não tem `projectId` EAS configurado e a CLI consultada nesta máquina retornou `Not logged in`; os fluxos de publicação em `.eas/workflows/` ainda não estão ativos.
 - A conexão GitHub atual está autenticada como `Murilobuenodeoliveira` e mostra o repositório privado do CRM Steinmetz, mas não mostra `murilobuenocontratei/Contratei`. O `origin` local para esse endereço retorna 404. Nenhum push ou deploy foi feito; não enviar este projeto ao repositório do CRM.

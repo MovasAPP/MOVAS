@@ -11,9 +11,10 @@ Execute estes arquivos **um por vez e nesta ordem** no SQL Editor do projeto Sup
 7. `migrations/20261027001200_in_app_notifications.sql`
 8. `migrations/20261027001300_safe_identity_document_replacement.sql`
 9. `migrations/20261027001400_prevent_payment_status_regression.sql`
+10. `migrations/20261027001500_restore_verified_job_feed_access.sql`
 
 Para cada arquivo: abra-o no repositório, copie todo o conteúdo, cole em uma consulta nova no SQL Editor e execute. Confirme que aparece sucesso antes de seguir para o próximo. Os arquivos 007 e 009 adicionam valores a enums; por isso devem ficar em consultas separadas e ser executados antes dos arquivos seguintes.
 
-As migrations são aditivas e não apagam registros atuais. Elas criam estruturas de pagamento, chat, conclusão, avaliações, suporte, notificações, atualização segura de fotos de documentos e proteção contra notificações de pagamento fora de ordem, além de regras de acesso. O checkout ainda não processa cobranças até as Edge Functions e os segredos do Mercado Pago serem configurados.
+As migrations são aditivas e não apagam registros atuais. Elas criam estruturas de pagamento, chat, conclusão, avaliações, suporte, notificações, atualização segura de fotos de documentos, proteção contra notificações de pagamento fora de ordem e restauração do controle de acesso ao feed de pedidos, além de regras de acesso. O checkout ainda não processa cobranças até as Edge Functions e os segredos do Mercado Pago serem configurados.
 
 Não cole senhas, `service_role`, chaves secretas ou tokens em arquivos versionados ou neste chat.
