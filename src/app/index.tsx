@@ -129,7 +129,7 @@ export default function HomeScreen() {
 
         <View style={styles.howCard}>
           <View style={styles.howStep}><Text style={styles.stepNumber}>1</Text><View><Text style={styles.stepTitle}>Conte o que precisa</Text><Text style={styles.stepText}>Só descrição ou descrição com fotos.</Text></View></View>
-          <View style={styles.howStep}><Text style={styles.stepNumber}>2</Text><View><Text style={styles.stepTitle}>Compare propostas</Text><Text style={styles.stepText}>Preço, perfil e avaliações em um só lugar.</Text></View></View>
+          <View style={styles.howStep}><Text style={styles.stepNumber}>2</Text><View><Text style={styles.stepTitle}>Compare propostas</Text><Text style={styles.stepText}>Preço, perfil e requisitos em um só lugar.</Text></View></View>
           <View style={styles.howStep}><Text style={styles.stepNumber}>3</Text><View><Text style={styles.stepTitle}>Acompanhe o pedido</Text><Text style={styles.stepText}>Veja o andamento e os valores no app.</Text></View></View>
         </View>
         <Text style={styles.disclaimer}>A verificação de identidade é feita manualmente. O CONTRATEI não confirma qualificações profissionais ou antecedentes.</Text>

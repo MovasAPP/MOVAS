@@ -114,7 +114,7 @@ export default function MyRequestsScreen() {
                       <Text style={styles.message}>{proposal.message}</Text>
                       <View style={styles.priceRow}>
                         <View><Text style={styles.priceLabel}>Valor do profissional</Text><Text style={styles.price}>{money(proposal.amount)}</Text></View>
-                        <View style={styles.totalBox}><Text style={styles.totalLabel}>Total estimado + taxa de 10%</Text><Text style={styles.total}>{money(proposal.customerTotal)}</Text></View>
+                        <View style={styles.totalBox}><Text style={styles.totalLabel}>Total com taxa CONTRATEI (10%)</Text><Text style={styles.total}>{money(proposal.customerTotal)}</Text></View>
                       </View>
                     </View>
                   )) : (

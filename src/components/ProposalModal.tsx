@@ -1,25 +1,33 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { Job } from '@/components/JobCard';
 import { money } from '@/components/JobCard';
 import { brand } from '@/constants/brand';
+import { parseBrazilianAmount } from '@/lib/format';
 
 type Props = { job: Job | null; onClose: () => void; onSubmit: (job: Job, amount: number, message: string) => Promise<void> };
 
 export function ProposalModal({ job, onClose, onSubmit }: Props) {
-  const [amount, setAmount] = useState(job?.price ? String(job.price) : '300');
+  const [amount, setAmount] = useState(job?.price ? String(job.price) : '');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const numericAmount = Number(amount.replace(',', '.')) || 0;
+  useEffect(() => {
+    setAmount(job?.price ? String(job.price) : '');
+    setMessage('');
+    setError('');
+  }, [job?.id, job?.price]);
+
+  const parsedAmount = parseBrazilianAmount(amount);
+  const numericAmount = parsedAmount !== null && Number.isFinite(parsedAmount) ? parsedAmount : 0;
   const appFee = numericAmount * 0.1;
 
   async function send() {
     if (busy) return;
     if (!job) return;
-    if (numericAmount <= 0) return setError('Informe um valor maior que zero.');
+    if (parsedAmount === null || !Number.isFinite(parsedAmount) || numericAmount <= 0) return setError('Informe um valor válido maior que zero.');
     if (!message.trim()) return setError('Escreva uma mensagem curta para o contratante.');
     setBusy(true);
     setError('');
@@ -56,11 +64,11 @@ export function ProposalModal({ job, onClose, onSubmit }: Props) {
           <TextInput keyboardType="decimal-pad" onChangeText={setAmount} style={styles.input} value={amount} />
           <View style={styles.priceBox}>
             <PriceLine label="Seu valor pelo serviço" value={money(numericAmount)} />
-            <PriceLine label="Comissão CONTRATEI paga pelo cliente (10%)" value={money(appFee)} />
-            <View style={styles.totalLine}><Text style={styles.totalLabel}>Total do cliente</Text><Text style={styles.totalValue}>{money(numericAmount + appFee)}</Text></View>
+            <PriceLine label="Taxa CONTRATEI paga pelo cliente (10%)" value={money(appFee)} />
+            <View style={styles.totalLine}><Text style={styles.totalLabel}>Total para o cliente</Text><Text style={styles.totalValue}>{money(numericAmount + appFee)}</Text></View>
           </View>
           <View style={styles.feeNote}>
-            <Text style={styles.feeNoteText}>A taxa do meio de pagamento fica por conta do profissional e será informada antes de confirmar a proposta, quando conectarmos o provedor.</Text>
+            <Text style={styles.feeNoteText}>Você recebe o valor informado pelo serviço. O cliente paga mais 10% de taxa CONTRATEI; eventual custo do meio de pagamento será informado antes da contratação. Pagamentos ainda não estão ativos.</Text>
           </View>
           <Text style={styles.label}>Mensagem ao contratante</Text>
           <TextInput

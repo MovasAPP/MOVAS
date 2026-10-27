@@ -27,7 +27,7 @@ npm run web
 - Cadastro e entrada com e-mail e senha conectados ao Supabase Auth do projeto próprio CONTRATEI.
 - Publicação real de pedidos no Supabase, com fotos no bucket privado `job-photos`.
 - Mural de pedidos abertos e envio de propostas no banco, respeitando as políticas RLS.
-- Área do contratante para acompanhar pedidos próprios e comparar as propostas recebidas, incluindo a taxa de 10% e o total estimado.
+- Área do contratante para acompanhar pedidos próprios e comparar propostas, com total incluindo a taxa de 10% paga pelo contratante.
 - Cadastro de perfil profissional e vários serviços por conta, com status de verificação lido do banco.
 - Envio privado da frente e do verso do documento de identidade, com consentimento e status de análise.
 - Fila de revisão de identidade exclusiva para membros `owner` e `verifier`, com visualização via links temporários.
@@ -41,7 +41,7 @@ npm run web
 
 O cadastro, o perfil profissional, os serviços, a publicação de pedidos, o upload privado de fotos, o diretório de serviços, a lista de pedidos, as propostas, os documentos e a revisão administrativa estão conectados ao Supabase. A navegação e o diretório são públicos; publicar pedidos, enviar propostas e ver os próprios dados exige conta. Propostas e acesso a fotos dos pedidos exigem trabalhador verificado. A conta owner de revisão já está cadastrada em `staff_members`. Notificações, chat e pagamentos ainda não estão conectados.
 
-O esquema e as políticas RLS estão em `supabase/migrations/`. As migrations 001–005 foram executadas no projeto CONTRATEI. As regras públicas revelam apenas nome público, cidade e dados do serviço de profissionais verificados; contatos pessoais, documentos, pedidos e propostas continuam protegidos. As demais ações seguem as políticas RLS para usuário proprietário, trabalhador verificado ou equipe de revisão.
+O esquema e as políticas RLS estão em `supabase/migrations/`. As migrations 001–005 foram executadas no projeto CONTRATEI. A regra de preço confirmada é: o trabalhador recebe o valor informado e o contratante paga mais 10% de taxa CONTRATEI. O custo do meio de pagamento ainda precisa ser definido e informado antes da cobrança real. As regras públicas revelam apenas nome público, cidade e dados do serviço de profissionais verificados; contatos pessoais, documentos, pedidos e propostas continuam protegidos. As demais ações seguem as políticas RLS para usuário proprietário, trabalhador verificado ou equipe de revisão.
 
 A URL e a chave publicável fornecidas foram configuradas somente no `.env.local`, que fica fora do Git. Use `.env.example` como modelo em outra máquina. Uma chave `publishable` é apropriada para o app; nunca inclua a `secret`/`service_role` no cliente.
 

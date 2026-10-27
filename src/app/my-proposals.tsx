@@ -77,7 +77,7 @@ export default function MyProposalsScreen() {
           <View style={styles.emptyCard}><Text style={styles.cardTitle}>Você ainda não enviou propostas</Text><Text style={styles.body}>Encontre pedidos abertos e envie uma proposta para começar.</Text><Pressable onPress={() => router.push('/work')} style={styles.actionButton}><Text style={styles.actionButtonText}>Ver oportunidades</Text></Pressable></View>
         ) : (
           <>
-            <SectionTitle title={`${proposals.length} ${proposals.length === 1 ? 'proposta enviada' : 'propostas enviadas'}`} subtitle="O contratante paga a taxa da plataforma além do valor proposto." />
+            <SectionTitle title={`${proposals.length} ${proposals.length === 1 ? 'proposta enviada' : 'propostas enviadas'}`} subtitle="Você recebe o valor informado; a taxa CONTRATEI de 10% é paga pelo cliente." />
             <View style={styles.list}>
               {proposals.map((proposal) => (
                 <View key={proposal.id} style={styles.card}>
@@ -88,8 +88,8 @@ export default function MyProposalsScreen() {
                   <Text style={styles.jobStatus}>{jobLabel[proposal.jobStatus]}</Text>
                   <Text style={styles.message}>{proposal.message}</Text>
                   <View style={styles.footer}>
-                    <View><Text style={styles.meta}>Você recebe</Text><Text style={styles.amount}>{money(proposal.amount)}</Text></View>
-                    <View style={styles.totalBox}><Text style={styles.totalLabel}>Contratante paga*</Text><Text style={styles.total}>{money(proposal.customerTotal)}</Text></View>
+                    <View><Text style={styles.meta}>Você recebe pelo serviço</Text><Text style={styles.amount}>{money(proposal.amount)}</Text></View>
+                    <View style={styles.totalBox}><Text style={styles.totalLabel}>Total para o cliente*</Text><Text style={styles.total}>{money(proposal.customerTotal)}</Text></View>
                   </View>
                   <Text style={styles.date}>Enviada em {new Date(proposal.createdAt).toLocaleDateString('pt-BR')}</Text>
                   {proposal.status === 'pending' && proposal.jobStatus === 'open' ? <Pressable disabled={busyProposal === proposal.id} onPress={() => void withdraw(proposal.id)} style={styles.withdrawButton}><Text style={styles.withdrawText}>{busyProposal === proposal.id ? 'Retirando…' : 'Retirar proposta'}</Text></Pressable> : null}
@@ -98,7 +98,7 @@ export default function MyProposalsScreen() {
             </View>
           </>
         )}
-        <Text style={styles.disclaimer}>*Total mostrado com a taxa de serviço de 10%. Custos do meio de pagamento serão apresentados antes da confirmação.</Text>
+        <Text style={styles.disclaimer}>*Total inclui 10% de taxa CONTRATEI, paga pelo cliente. Eventuais custos do meio de pagamento serão apresentados antes da contratação. Pagamentos ainda não estão ativos.</Text>
       </Page>
       <AuthModal visible={authOpen} onClose={() => setAuthOpen(false)} />
     </View>

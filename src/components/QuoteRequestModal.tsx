@@ -135,8 +135,8 @@ export function QuoteRequestModal({ initialCategory = '', visible, onClose, onSu
                   <TextInput onChangeText={setCity} placeholder="Ex.: Tramandaí" placeholderTextColor="#87938E" style={styles.input} value={city} />
                 </View>
                 <View style={styles.half}>
-                  <Text style={styles.label}>Quando precisa?</Text>
-                  <TextInput onChangeText={setDate} placeholder="Ex.: Sábado" placeholderTextColor="#87938E" style={styles.input} value={date} />
+                  <Text style={styles.label}>Data desejada (opcional)</Text>
+                  <TextInput onChangeText={setDate} placeholder="DD/MM/AAAA" placeholderTextColor="#87938E" style={styles.input} value={date} />
                 </View>
               </View>
               <Text style={styles.label}>Fotos do trabalho (opcional)</Text>

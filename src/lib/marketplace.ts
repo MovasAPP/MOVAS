@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import type { QuoteRequest } from '@/components/QuoteRequestModal';
 import type { Job } from '@/components/JobCard';
 import { categories } from '@/constants/brand';
+import { parseBrazilianAmount, parseBrazilianDate } from '@/lib/format';
 
 const categoryIds: Record<string, string> = {
   Limpeza: 'cleaning',
@@ -15,10 +16,9 @@ const categoryIds: Record<string, string> = {
 };
 
 export async function createJobRequest(request: QuoteRequest, userId: string) {
-  const dateMatch = request.date.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  const preferredDate = dateMatch ? `${dateMatch[3]}-${dateMatch[2]}-${dateMatch[1]}` : null;
-  const amountText = request.budget.trim().replace(/[^\d,.-]/g, '').replace(',', '.');
-  const budget = amountText ? Number(amountText) : null;
+  const preferredDate = parseBrazilianDate(request.date);
+  if (request.date.trim() && !preferredDate) throw new Error('Informe a data no formato DD/MM/AAAA.');
+  const budget = parseBrazilianAmount(request.budget);
   if (budget !== null && (!Number.isFinite(budget) || budget < 0)) throw new Error('Confira o valor informado para o orçamento.');
 
   const { data: job, error } = await supabase.from('job_requests').insert({
