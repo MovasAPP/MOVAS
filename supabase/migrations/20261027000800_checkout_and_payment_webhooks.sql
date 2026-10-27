@@ -27,6 +27,21 @@ create index job_payments_worker_idx on public.job_payments (worker_id, created_
 create trigger job_payments_set_updated_at before update on public.job_payments
 for each row execute function public.set_updated_at();
 
+-- A worker may withdraw a pending proposal while an unselected proposal is being paid,
+-- but may not withdraw the proposal reserved by an active checkout.
+drop policy if exists "workers withdraw their own pending proposals" on public.job_proposals;
+create policy "workers withdraw pending proposals not being paid"
+on public.job_proposals for update to authenticated
+using (
+  worker_id = (select auth.uid())
+  and status = 'pending'
+  and not exists (
+    select 1 from public.job_payments p
+    where p.proposal_id = job_proposals.id and p.status in ('creating', 'pending', 'approved')
+  )
+)
+with check (worker_id = (select auth.uid()) and status = 'withdrawn');
+
 alter table public.job_payments enable row level security;
 revoke all on public.job_payments from public, anon, authenticated;
 grant select (id, job_id, proposal_id, client_id, worker_id, service_amount, platform_fee, customer_total, processing_fee, status, created_at, updated_at)
