@@ -15,6 +15,7 @@ Este documento separa o que está implementado no repositório do que já foi co
 - As Edge Functions de OAuth, checkout e webhook estão no repositório, mas ainda não foram publicadas nem receberam os segredos do Mercado Pago.
 - O projeto EAS `@contratei.app/contratei` está criado e associado ao `projectId` `4707f645-b53b-43cf-b9ac-466dc225a789`. A URL e a chave publicável do Supabase estão cadastradas como variáveis plaintext nos ambientes EAS `preview` e `production`.
 - A build interna de preview Android 1.0.0 foi concluída no EAS (build `ffe83a7a-ddd0-4852-856d-e33e82a7b768`). O APK pode ser baixado em https://expo.dev/artifacts/eas/7j8teoF2IHcAE8xADOw14yw_iqfAvzNZ8Tct48YQ8Q4.apk; é uma build para testes, ainda não publicada na Play Store.
+- A tentativa de build iOS interna foi interrompida porque o EAS não encontrou credenciais de assinatura para distribuição interna. São necessárias as credenciais Apple Developer antes de gerar uma versão instalável para iPhone.
 - A conexão GitHub atual está autenticada como `Murilobuenodeoliveira` e mostra o repositório privado do CRM Steinmetz, mas não mostra `murilobuenocontratei/Contratei`. O `origin` local para esse endereço retorna 404. Nenhum push ou deploy foi feito; não enviar este projeto ao repositório do CRM.
 
 ## Próximas etapas
