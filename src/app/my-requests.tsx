@@ -38,9 +38,10 @@ export default function MyRequestsScreen() {
   const [busyCancelId, setBusyCancelId] = useState<string | null>(null);
   const [busyPaymentId, setBusyPaymentId] = useState<string | null>(null);
 
-  const refreshJobs = useCallback(() => {
+  const refreshJobs = useCallback((paymentReturn = false) => {
     let active = true;
     setError('');
+    if (paymentReturn) setBusyPaymentId(null);
     if (!user) {
       return () => { active = false; };
     }
@@ -55,7 +56,7 @@ export default function MyRequestsScreen() {
     return () => { active = false; };
   }, [user]);
 
-  useFocusEffect(useCallback(() => refreshJobs(), [refreshJobs]));
+  useFocusEffect(useCallback(() => refreshJobs(Boolean(payment)), [refreshJobs, payment]));
 
   async function payProposal(proposalId: string) {
     if (busyPaymentId) return;
