@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import * as Linking from 'expo-linking';
 
 import { brand } from '@/constants/brand';
 import { supabase } from '@/lib/supabase';
@@ -7,23 +8,31 @@ import { supabase } from '@/lib/supabase';
 type Props = { visible: boolean; onClose: () => void };
 
 export function AuthModal({ visible, onClose }: Props) {
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [mode, setMode] = useState<'signin' | 'signup' | 'recover'>('signin');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [confirmationSent, setConfirmationSent] = useState(false);
+  const [recoverySent, setRecoverySent] = useState(false);
 
   async function submit() {
     setError('');
     if (mode === 'signup' && name.trim().length < 2) return setError('Informe seu nome.');
     if (!email.trim()) return setError('Informe seu e-mail.');
-    if (password.length < 8) return setError('Use uma senha com pelo menos 8 caracteres.');
+    if (mode !== 'recover' && password.length < 8) return setError('Use uma senha com pelo menos 8 caracteres.');
 
     setBusy(true);
     try {
-      if (mode === 'signup') {
+      if (mode === 'recover') {
+        const redirectTo = Platform.OS === 'web'
+          ? `${window.location.origin}/reset-password`
+          : Linking.createURL('reset-password', { scheme: 'contratei' });
+        const { error: recoveryError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo });
+        if (recoveryError) throw recoveryError;
+        setRecoverySent(true);
+      } else if (mode === 'signup') {
         const { data, error: signUpError } = await supabase.auth.signUp({
           email: email.trim().toLowerCase(),
           password,
@@ -47,10 +56,11 @@ export function AuthModal({ visible, onClose }: Props) {
     }
   }
 
-  function switchMode(next: 'signin' | 'signup') {
+  function switchMode(next: 'signin' | 'signup' | 'recover') {
     setMode(next);
     setError('');
     setConfirmationSent(false);
+    setRecoverySent(false);
   }
 
   return (
@@ -61,9 +71,9 @@ export function AuthModal({ visible, onClose }: Props) {
             <View style={styles.heading}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.eyebrow}>CONTRATEI · CONTA PESSOAL</Text>
-                <Text style={styles.title}>{confirmationSent ? 'Confira seu e-mail' : mode === 'signin' ? 'Que bom ter você de volta' : 'Crie sua conta'}</Text>
+                <Text style={styles.title}>{confirmationSent ? 'Confira seu e-mail' : recoverySent ? 'Confira sua caixa de entrada' : mode === 'recover' ? 'Recupere sua senha' : mode === 'signin' ? 'Que bom ter você de volta' : 'Crie sua conta'}</Text>
                 <Text style={styles.subtitle}>
-                  {confirmationSent ? `Enviamos um link de confirmação para ${email}. Depois, volte aqui para entrar.` : 'A mesma conta serve para contratar e trabalhar.'}
+                  {confirmationSent ? `Enviamos um link de confirmação para ${email}. Depois, volte aqui para entrar.` : recoverySent ? 'Se houver uma conta com esse e-mail, enviaremos um link seguro para criar outra senha.' : mode === 'recover' ? 'Informe o e-mail da sua conta. Enviaremos um link para você criar uma nova senha.' : 'A mesma conta serve para contratar e trabalhar.'}
                 </Text>
               </View>
               <Pressable accessibilityRole="button" accessibilityLabel="Fechar" onPress={onClose} style={styles.close}><Text style={styles.closeText}>×</Text></Pressable>
@@ -73,22 +83,28 @@ export function AuthModal({ visible, onClose }: Props) {
                 <Text style={styles.confirmationText}>Sua conta só entra no app depois que você confirmar o endereço. Não compartilhe o link de confirmação com ninguém.</Text>
                 <Pressable onPress={() => switchMode('signin')} style={styles.submit}><Text style={styles.submitText}>Já confirmei · entrar</Text></Pressable>
               </View>
+            ) : recoverySent ? (
+              <View style={styles.confirmationBox}>
+                <Text style={styles.confirmationText}>Abra o link no mesmo dispositivo onde o CONTRATEI está instalado. No site, o link abrirá a tela para criar uma nova senha.</Text>
+                <Pressable onPress={() => switchMode('signin')} style={styles.submit}><Text style={styles.submitText}>Voltar para entrar</Text></Pressable>
+              </View>
             ) : (
               <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                 {mode === 'signup' ? <Field label="Nome" value={name} onChangeText={setName} placeholder="Como podemos chamar você?" autoCapitalize="words" /> : null}
                 <Field label="E-mail" value={email} onChangeText={setEmail} placeholder="voce@email.com" keyboardType="email-address" autoCapitalize="none" />
-                <Field label="Senha" value={password} onChangeText={setPassword} placeholder="Pelo menos 8 caracteres" secureTextEntry />
+                {mode !== 'recover' ? <Field label="Senha" value={password} onChangeText={setPassword} placeholder="Pelo menos 8 caracteres" secureTextEntry /> : null}
                 {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
                 <Pressable disabled={busy} onPress={submit} style={[styles.submit, busy && styles.submitDisabled]}>
-                  <Text style={styles.submitText}>{busy ? 'Aguarde…' : mode === 'signin' ? 'Entrar' : 'Criar conta'}</Text>
+                  <Text style={styles.submitText}>{busy ? 'Aguarde…' : mode === 'signin' ? 'Entrar' : mode === 'recover' ? 'Enviar link de recuperação' : 'Criar conta'}</Text>
                 </Pressable>
+                {mode === 'signin' ? <Pressable onPress={() => switchMode('recover')} style={styles.forgotButton}><Text style={styles.forgotText}>Esqueci minha senha</Text></Pressable> : null}
                 <View style={styles.modeSwitch}>
-                  <Text style={styles.switchPrompt}>{mode === 'signin' ? 'Ainda não tem conta?' : 'Já tem uma conta?'}</Text>
-                  <Pressable onPress={() => switchMode(mode === 'signin' ? 'signup' : 'signin')}>
-                    <Text style={styles.switchAction}>{mode === 'signin' ? 'Criar conta' : 'Entrar'}</Text>
+                  <Text style={styles.switchPrompt}>{mode === 'signup' ? 'Já tem uma conta?' : mode === 'recover' ? 'Lembrou sua senha?' : 'Ainda não tem conta?'}</Text>
+                  <Pressable onPress={() => switchMode(mode === 'signup' ? 'signin' : mode === 'recover' ? 'signin' : 'signup')}>
+                    <Text style={styles.switchAction}>{mode === 'signup' || mode === 'recover' ? 'Entrar' : 'Criar conta'}</Text>
                   </Pressable>
                 </View>
-                <Text style={styles.note}>Cadastro protegido pelo Supabase Auth. Use seu e-mail pessoal; documentos de identidade não são solicitados nesta etapa.</Text>
+                {mode !== 'recover' ? <Text style={styles.note}>Cadastro protegido pelo Supabase Auth. Use seu e-mail pessoal; documentos de identidade não são solicitados nesta etapa.</Text> : null}
               </ScrollView>
             )}
           </View>
@@ -121,6 +137,8 @@ const styles = StyleSheet.create({
   submit: { alignItems: 'center', backgroundColor: brand.orange, borderRadius: 12, marginTop: 16, padding: 14 },
   submitDisabled: { opacity: 0.6 },
   submitText: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  forgotButton: { alignSelf: 'center', marginTop: 12, padding: 4 },
+  forgotText: { color: brand.orangeDark, fontSize: 11, fontWeight: '800' },
   modeSwitch: { alignItems: 'center', flexDirection: 'row', gap: 5, justifyContent: 'center', marginTop: 14 },
   switchPrompt: { color: brand.muted, fontSize: 11 },
   switchAction: { color: brand.orangeDark, fontSize: 11, fontWeight: '800' },

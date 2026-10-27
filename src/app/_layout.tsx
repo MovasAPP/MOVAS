@@ -29,6 +29,7 @@ export default function RootLayout() {
       <Tabs.Screen name="dispute" options={{ href: null }} />
       <Tabs.Screen name="disputes" options={{ href: null }} />
       <Tabs.Screen name="notifications" options={{ href: null }} />
+      <Tabs.Screen name="reset-password" options={{ href: null }} />
       </Tabs>
     </AuthProvider>
   );
