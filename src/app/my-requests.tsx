@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 
 import { BrandHeader } from '@/components/BrandHeader';
@@ -27,6 +27,7 @@ const proposalStatusLabel = {
 } as const;
 
 export default function MyRequestsScreen() {
+  const { payment } = useLocalSearchParams<{ payment?: string }>();
   const { user } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
   const [jobs, setJobs] = useState<ClientJob[] | null>(null);
@@ -37,6 +38,7 @@ export default function MyRequestsScreen() {
 
   const refreshJobs = useCallback(() => {
     let active = true;
+    setError('');
     if (!user) {
       return () => { active = false; };
     }
@@ -90,6 +92,9 @@ export default function MyRequestsScreen() {
         <Text style={styles.eyebrow}>ÁREA DO CONTRATANTE</Text>
         <Text style={styles.title}>Meus pedidos</Text>
         <Text style={styles.subtitle}>Acompanhe cada pedido e compare as propostas recebidas.</Text>
+        {payment === 'success' ? <Text style={styles.paymentNotice}>Pagamento enviado ao Mercado Pago. A contratação será confirmada aqui após a confirmação segura do pagamento.</Text> : null}
+        {payment === 'pending' ? <Text style={styles.paymentNotice}>Pagamento pendente. Estamos aguardando a confirmação do Mercado Pago.</Text> : null}
+        {payment === 'failure' ? <Text style={styles.paymentError}>O pagamento não foi concluído. Nenhuma contratação foi confirmada; você pode tentar novamente.</Text> : null}
         {!user ? (
           <Pressable onPress={() => setAuthOpen(true)} style={styles.emptyCard}>
             <Text style={styles.emptyTitle}>Entre para ver seus pedidos</Text>
@@ -137,6 +142,7 @@ export default function MyRequestsScreen() {
                         <View><Text style={styles.priceLabel}>Valor do profissional</Text><Text style={styles.price}>{money(proposal.amount)}</Text></View>
                         <View style={styles.totalBox}><Text style={styles.totalLabel}>Total com taxa CONTRATEI (10%)</Text><Text style={styles.total}>{money(proposal.customerTotal)}</Text></View>
                       </View>
+                      <Text style={styles.processingFeeNote}>A tarifa de processamento do Mercado Pago será descontada do recebimento do profissional.</Text>
                       {job.status === 'open' && proposal.status === 'pending' ? (
                         <Pressable disabled={busyPaymentId !== null} onPress={() => void payProposal(proposal.id)} style={[styles.payButton, busyPaymentId !== null && { opacity: 0.65 }]}>
                           <Text style={styles.payButtonText}>{busyPaymentId === proposal.id ? 'Preparando pagamento…' : `Contratar e pagar ${money(proposal.customerTotal)}`}</Text>
@@ -177,6 +183,8 @@ const styles = StyleSheet.create({
   eyebrow: { color: brand.orangeDark, fontSize: 10, fontWeight: '900', letterSpacing: 1.2, marginTop: 28 },
   title: { color: brand.ink, fontSize: 36, fontWeight: '900', letterSpacing: -1.5, marginTop: 8 },
   subtitle: { color: brand.muted, fontSize: 13, lineHeight: 20, marginTop: 5, maxWidth: 620 },
+  paymentNotice: { backgroundColor: '#EAF5EF', borderRadius: 10, color: '#246044', fontSize: 11, lineHeight: 16, marginTop: 15, maxWidth: 860, padding: 11 },
+  paymentError: { backgroundColor: '#FFF2EF', borderRadius: 10, color: '#8C3529', fontSize: 11, lineHeight: 16, marginTop: 15, maxWidth: 860, padding: 11 },
   loading: { color: brand.muted, fontSize: 12, marginTop: 24 },
   error: { color: '#B42318', fontSize: 12, marginTop: 22 },
   emptyCard: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 16, borderWidth: 1, marginTop: 24, maxWidth: 700, padding: 18 },
@@ -207,6 +215,7 @@ const styles = StyleSheet.create({
   totalBox: { backgroundColor: brand.orangeSoft, borderRadius: 9, paddingHorizontal: 10, paddingVertical: 7 },
   totalLabel: { color: brand.orangeDark, fontSize: 8, fontWeight: '700' },
   total: { color: brand.orangeDark, fontSize: 14, fontWeight: '900', marginTop: 3 },
+  processingFeeNote: { color: brand.muted, fontSize: 9, lineHeight: 14, marginTop: 8 },
   payButton: { alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 9, marginTop: 12, paddingHorizontal: 13, paddingVertical: 10 },
   payButtonText: { color: '#fff', fontSize: 10, fontWeight: '900' },
   noProposals: { color: brand.muted, fontSize: 10, lineHeight: 16, paddingTop: 11 },
