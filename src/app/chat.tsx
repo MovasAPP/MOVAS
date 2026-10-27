@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -25,17 +25,20 @@ export default function JobChatScreen() {
   const { user } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
   const [chat, setChat] = useState<JobChat | null>(null);
+  const [loadedRequestKey, setLoadedRequestKey] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => { setChat(null); }, [jobId, user?.id]);
+  const requestKey = `${user?.id ?? ''}:${jobId ?? ''}`;
+  const currentChat = loadedRequestKey === requestKey ? chat : null;
 
   const refresh = useCallback(async () => {
     if (!jobId || !user) return;
     setError('');
     try {
       setChat(await getJobChat(jobId));
+      setLoadedRequestKey(`${user.id}:${jobId}`);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Não foi possível carregar a conversa.');
     }
@@ -66,12 +69,12 @@ export default function JobChatScreen() {
   }
 
   async function complete() {
-    if (!chat || busy) return;
+    if (!currentChat || busy) return;
     setBusy(true);
     setError('');
     try {
-      if (chat.isClient) await confirmJobCompletion(chat.id);
-      else await requestJobCompletion(chat.id);
+      if (currentChat.isClient) await confirmJobCompletion(currentChat.id);
+      else await requestJobCompletion(currentChat.id);
       await refresh();
     } catch (completionError) {
       setError(completionError instanceof Error ? completionError.message : 'Não foi possível atualizar a conclusão.');
@@ -82,22 +85,22 @@ export default function JobChatScreen() {
 
   return (
     <View style={styles.screen}>
-      <BrandHeader mode={chat?.isClient === false ? 'work' : 'hire'} />
+      <BrandHeader mode={currentChat?.isClient === false ? 'work' : 'hire'} />
       <Page>
         <Pressable onPress={() => router.back()} style={styles.back}><Text style={styles.backText}>‹ Voltar</Text></Pressable>
         {!user ? (
           <Pressable onPress={() => setAuthOpen(true)} style={styles.card}><Text style={styles.title}>Entre para abrir a conversa</Text></Pressable>
-        ) : !chat ? (
+        ) : !currentChat ? (
           <View style={styles.card}><Text style={styles.loading}>{error || 'Carregando conversa…'}</Text><Pressable onPress={() => void refresh()} style={styles.refresh}><Text style={styles.refreshText}>Tentar novamente</Text></Pressable></View>
         ) : (
           <>
             <Text style={styles.eyebrow}>CONVERSA DA CONTRATAÇÃO</Text>
-            <Text style={styles.title}>{chat.title}</Text>
-            <Text style={styles.subtitle}>Com {chat.otherPartyName} · {statusLabel[chat.status]}</Text>
+            <Text style={styles.title}>{currentChat.title}</Text>
+            <Text style={styles.subtitle}>Com {currentChat.otherPartyName} · {statusLabel[currentChat.status]}</Text>
             {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
             <View style={styles.card}>
               <View style={styles.messageList}>
-                {chat.messages.length ? chat.messages.map((item) => {
+                {currentChat.messages.length ? currentChat.messages.map((item) => {
                   const mine = item.senderId === user.id;
                   return <View key={item.id} style={[styles.messageBubble, mine ? styles.myMessage : styles.theirMessage]}>
                     <Text style={[styles.messageBody, mine && styles.myMessageBody]}>{item.body}</Text>
@@ -105,19 +108,19 @@ export default function JobChatScreen() {
                   </View>;
                 }) : <Text style={styles.empty}>Ainda não há mensagens. Combine os detalhes do serviço por aqui.</Text>}
               </View>
-              {chat.status === 'in_progress' ? (
+              {currentChat.status === 'in_progress' ? (
                 <View style={styles.composer}>
                   <TextInput multiline maxLength={2000} onChangeText={setMessage} placeholder="Escreva uma mensagem…" placeholderTextColor="#87938E" style={styles.input} value={message} />
                   <Pressable disabled={busy || !message.trim()} onPress={() => void send()} style={[styles.sendButton, (busy || !message.trim()) && { opacity: 0.5 }]}><Text style={styles.sendText}>{busy ? 'Enviando…' : 'Enviar'}</Text></Pressable>
                 </View>
-              ) : chat.status === 'completion_pending' ? (
+              ) : currentChat.status === 'completion_pending' ? (
                 <View style={styles.completionBox}>
-                  {chat.isClient ? <><Text style={styles.completionText}>O profissional informou que concluiu o serviço. Confira o resultado antes de confirmar.</Text><Pressable disabled={busy} onPress={() => void complete()} style={styles.confirmButton}><Text style={styles.confirmText}>{busy ? 'Salvando…' : 'Confirmar conclusão'}</Text></Pressable></> : <Text style={styles.completionText}>Conclusão enviada. A avaliação ficará disponível quando o contratante confirmar.</Text>}
+                  {currentChat.isClient ? <><Text style={styles.completionText}>O profissional informou que concluiu o serviço. Confira o resultado antes de confirmar.</Text><Pressable disabled={busy} onPress={() => void complete()} style={styles.confirmButton}><Text style={styles.confirmText}>{busy ? 'Salvando…' : 'Confirmar conclusão'}</Text></Pressable></> : <Text style={styles.completionText}>Conclusão enviada. A avaliação ficará disponível quando o contratante confirmar.</Text>}
                 </View>
-              ) : chat.status === 'completed' ? (
-                <View style={styles.completionBox}><Text style={styles.completionText}>Serviço concluído. Você pode avaliar a outra parte.</Text><Pressable onPress={() => router.push({ pathname: '/review-job', params: { jobId: chat.id } })} style={styles.confirmButton}><Text style={styles.confirmText}>Avaliar serviço</Text></Pressable></View>
+              ) : currentChat.status === 'completed' ? (
+                <View style={styles.completionBox}><Text style={styles.completionText}>Serviço concluído. Você pode avaliar a outra parte.</Text><Pressable onPress={() => router.push({ pathname: '/review-job', params: { jobId: currentChat.id } })} style={styles.confirmButton}><Text style={styles.confirmText}>Avaliar serviço</Text></Pressable></View>
               ) : null}
-              {['in_progress', 'completion_pending', 'completed'].includes(chat.status) ? <Pressable onPress={() => router.push({ pathname: '/dispute', params: { jobId: chat.id } })} style={styles.disputeLink}><Text style={styles.disputeText}>Precisa de ajuda? Abrir uma solicitação de suporte</Text></Pressable> : null}
+              {['in_progress', 'completion_pending', 'completed'].includes(currentChat.status) ? <Pressable onPress={() => router.push({ pathname: '/dispute', params: { jobId: currentChat.id } })} style={styles.disputeLink}><Text style={styles.disputeText}>Precisa de ajuda? Abrir uma solicitação de suporte</Text></Pressable> : null}
               <Pressable onPress={() => void refresh()} style={styles.refresh}><Text style={styles.refreshText}>Atualizar conversa</Text></Pressable>
             </View>
           </>

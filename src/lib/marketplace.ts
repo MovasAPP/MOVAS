@@ -87,7 +87,10 @@ export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]
   if (ratingsError) throw ratingsError;
 
   const profileById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
-  const ratingsByWorker = new Map((ratings ?? []).map((rating: { worker_id: string; average_rating: number; review_count: number }) => [rating.worker_id, rating]));
+  type WorkerRatingRow = { worker_id: string; average_rating: number; review_count: number };
+  const ratingsByWorker = new Map<string, WorkerRatingRow>(
+    ((ratings ?? []) as WorkerRatingRow[]).map((rating) => [rating.worker_id, rating]),
+  );
   const categoryById = new Map(Object.entries(categoryIds).map(([name, id]) => [id, name]));
   const categoryMetaByName = new Map(categories.map((category) => [category.name, category]));
   const priceUnitLabel: Record<string, string> = {

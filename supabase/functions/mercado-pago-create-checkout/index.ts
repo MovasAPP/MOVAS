@@ -23,7 +23,7 @@ Deno.serve(async (request) => {
     if (prepareError || !prepared?.length) {
       return jsonResponse({ error: prepareError?.message || 'Não foi possível iniciar este pagamento.' }, 409);
     }
-    const payment = prepared[0] as { payment_id: string; job_id: string; worker_id: string; service_amount: number; platform_fee: number; customer_total: number };
+    const payment = prepared[0] as { payment_id: string; proposal_id: string; job_id: string; worker_id: string; service_amount: number; platform_fee: number; customer_total: number };
     paymentId = payment.payment_id;
 
     const { accessToken, providerUserId } = await getMercadoPagoSellerToken(admin, payment.worker_id);

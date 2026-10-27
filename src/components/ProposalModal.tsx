@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { Job } from '@/components/JobCard';
@@ -13,12 +13,6 @@ export function ProposalModal({ job, onClose, onSubmit }: Props) {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    setAmount(job?.price ? String(job.price) : '');
-    setMessage('');
-    setError('');
-  }, [job?.id, job?.price]);
 
   const parsedAmount = parseBrazilianAmount(amount);
   const numericAmount = parsedAmount !== null && Number.isFinite(parsedAmount) ? parsedAmount : 0;
