@@ -231,8 +231,8 @@ export async function startMercadoPagoConnection(platform: 'web' | 'native'): Pr
   return data.authorizationUrl;
 }
 
-export async function createMercadoPagoCheckout(proposalId: string): Promise<string> {
-  const { data, error } = await supabase.functions.invoke('mercado-pago-create-checkout', { body: { proposalId } });
+export async function createMercadoPagoCheckout(proposalId: string, platform: 'web' | 'native'): Promise<string> {
+  const { data, error } = await supabase.functions.invoke('mercado-pago-create-checkout', { body: { proposalId, platform } });
   if (error) throw error;
   if (typeof data?.checkoutUrl !== 'string' || !data.checkoutUrl.startsWith('https://')) {
     throw new Error(data?.error || 'Não foi possível iniciar o pagamento.');

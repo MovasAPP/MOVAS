@@ -62,7 +62,7 @@ export default function MyRequestsScreen() {
     setBusyPaymentId(proposalId);
     setError('');
     try {
-      const checkoutUrl = await createMercadoPagoCheckout(proposalId);
+      const checkoutUrl = await createMercadoPagoCheckout(proposalId, Platform.OS === 'web' ? 'web' : 'native');
       if (Platform.OS === 'web') window.location.assign(checkoutUrl);
       else await WebBrowser.openBrowserAsync(checkoutUrl);
     } catch (paymentError) {

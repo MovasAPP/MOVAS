@@ -15,6 +15,7 @@ Deno.serve(async (request) => {
     const body = await request.json();
     const proposalId = typeof body?.proposalId === 'string' ? body.proposalId : '';
     if (!/^[0-9a-f-]{36}$/i.test(proposalId)) return jsonResponse({ error: 'Selecione uma proposta válida.' }, 400);
+    const returnPlatform = body?.platform === 'web' ? 'web' : 'native';
 
     const { data: prepared, error: prepareError } = await admin.rpc('prepare_job_payment', {
       p_client_id: auth.user.id,
@@ -54,7 +55,11 @@ Deno.serve(async (request) => {
         marketplace_fee: Number(payment.platform_fee),
         external_reference: payment.payment_id,
         notification_url: webhookUrl,
-        back_urls: {
+        back_urls: returnPlatform === 'native' ? {
+          success: 'contratei://my-requests?payment=success',
+          failure: 'contratei://my-requests?payment=failure',
+          pending: 'contratei://my-requests?payment=pending',
+        } : {
           success: new URL('/my-requests?payment=success', webUrl).toString(),
           failure: new URL('/my-requests?payment=failure', webUrl).toString(),
           pending: new URL('/my-requests?payment=pending', webUrl).toString(),
