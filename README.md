@@ -19,7 +19,7 @@ npm run web
 
 ## O que já está na primeira versão
 
-- Início para contratantes, com categorias e profissionais de demonstração.
+- Início para contratantes, com categorias e diretório real de profissionais verificados.
 - Formulário para pedir orçamento com descrição, cidade, data, preço opcional, fotos opcionais e exigências de EPI, MEI e nota fiscal.
 - Área de oportunidades para profissionais e formulário de proposta com cálculo ilustrativo da comissão de 10% paga pelo contratante.
 - Telas de segurança/privacidade e perfil com alternância entre contratar e trabalhar.
@@ -34,13 +34,14 @@ npm run web
 - Área profissional para acompanhar o histórico de propostas enviadas e seus status.
 - Retirada de proposta pelo trabalhador enquanto ela ainda está pendente e cancelamento de pedido aberto pelo contratante.
 - Fotos dos pedidos exibidas aos profissionais verificados por links privados temporários.
+- Diretório público conectado ao banco, mostrando somente serviços ativos de profissionais verificados no RS.
 - Site configurado para exportação estática com metadados em português e compatibilidade com hospedagem EAS.
 
 ## Estado do produto
 
-O cadastro, o perfil profissional, os serviços, a publicação de pedidos, o upload privado de fotos, a listagem dos pedidos, a criação de propostas, o envio de documentos e a fila administrativa de revisão estão conectados ao Supabase. Os profissionais mostrados na página inicial continuam sendo exemplos visuais. Propostas exigem perfil profissional verificado. O primeiro usuário da equipe de revisão precisa ser cadastrado manualmente em `staff_members` usando o modelo em `supabase/manual/seed_first_owner.sql`. Notificações, chat e pagamentos não estão conectados.
+O cadastro, o perfil profissional, os serviços, a publicação de pedidos, o upload privado de fotos, o diretório de serviços, a lista de pedidos, as propostas, os documentos e a revisão administrativa estão conectados ao Supabase. A navegação e o diretório são públicos; publicar pedidos, enviar propostas e ver os próprios dados exige conta. Propostas e acesso a fotos dos pedidos exigem trabalhador verificado. A conta owner de revisão já está cadastrada em `staff_members`. Notificações, chat e pagamentos ainda não estão conectados.
 
-O esquema e as políticas RLS estão em `supabase/migrations/`. As migrations cobrem perfis, contatos privados, categorias, serviços, pedidos, fotos privadas, propostas e documentos de verificação privados. As migrations inicial e de documentos foram executadas no projeto CONTRATEI. O acesso exige sessão autenticada; as políticas RLS limitam cada ação ao usuário ou à equipe de verificação autorizada.
+O esquema e as políticas RLS estão em `supabase/migrations/`. As migrations 001–005 foram executadas no projeto CONTRATEI. As regras públicas revelam apenas nome público, cidade e dados do serviço de profissionais verificados; contatos pessoais, documentos, pedidos e propostas continuam protegidos. As demais ações seguem as políticas RLS para usuário proprietário, trabalhador verificado ou equipe de revisão.
 
 A URL e a chave publicável fornecidas foram configuradas somente no `.env.local`, que fica fora do Git. Use `.env.example` como modelo em outra máquina. Uma chave `publishable` é apropriada para o app; nunca inclua a `secret`/`service_role` no cliente.
 
@@ -54,7 +55,7 @@ O workflow `.eas/workflows/native-build.yml` cria builds de produção sob deman
 
 ## Próximos itens do produto
 
-Escolha/aceite de propostas, regras de cancelamento e disputa, pagamentos de marketplace, chat e notificações ainda dependem das regras comerciais e da configuração de um provedor de pagamentos. Não colocar chaves secretas no app; usar variáveis públicas somente para chaves publishable e manter segredos em funções de servidor.
+Aceitar uma proposta e iniciar uma contratação ainda não está conectado a pagamento. Também faltam regras completas de cancelamento e disputa, chat, notificações e avaliações. Integração com marketplace de pagamentos depende da definição do provedor e da configuração das contas comerciais. Não colocar chaves secretas no app; manter segredos em funções de servidor.
 
 O projeto de backend do CONTRATEI é separado do CRM da Steinmetz e está configurado localmente neste app. Não aplique a migration no projeto da Steinmetz.
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -9,16 +9,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { SectionTitle } from '@/components/SectionTitle';
 import { brand, categories } from '@/constants/brand';
 import { useAuth } from '@/lib/auth';
-import { createJobRequest } from '@/lib/marketplace';
-
-const professionals = [
-  { name: 'Marina Oliveira', job: 'Limpeza residencial', city: 'Porto Alegre', rating: '4,9', category: 'Limpeza', icon: '🧹', color: '#F7E8C5', price: 'A partir de R$ 180' },
-  { name: 'João Martins', job: 'Eletricista e instalações', city: 'Porto Alegre', rating: '5,0', category: 'Elétrica', icon: '⚡', color: '#F7E4AC', price: 'Orçamento personalizado' },
-  { name: 'Rafael Souza', job: 'Pintura e reparos', city: 'Canoas', rating: '4,8', category: 'Pintura', icon: '🖌️', color: '#F4DDD5', price: 'A partir de R$ 220' },
-  { name: 'Bruna Lima', job: 'Babá com referências', city: 'Porto Alegre', rating: '5,0', category: 'Babá', icon: '🧸', color: '#E7DEF1', price: 'Valor por hora' },
-  { name: 'Diego Alves', job: 'Reparos e montagem', city: 'Canoas', rating: '4,9', category: 'Reparos', icon: '🛠️', color: '#D9ECEA', price: 'Orçamento personalizado' },
-  { name: 'Camila Freitas', job: 'Automação residencial', city: 'Porto Alegre', rating: '5,0', category: 'Automação', icon: '📡', color: '#DDEAF2', price: 'Orçamento personalizado' },
-];
+import { createJobRequest, getVerifiedWorkerServices, type VerifiedServiceCard } from '@/lib/marketplace';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -28,15 +19,33 @@ export default function HomeScreen() {
   const [category, setCategory] = useState('Todas');
   const [search, setSearch] = useState('');
   const [city, setCity] = useState('Porto Alegre');
+  const [requestInitialCategory, setRequestInitialCategory] = useState('');
+  const [professionals, setProfessionals] = useState<VerifiedServiceCard[] | null>(null);
+  const [directoryError, setDirectoryError] = useState('');
   const [notice, setNotice] = useState('');
 
-  const visibleProfessionals = useMemo(() => professionals.filter((person) => {
-    const categoryMatch = category === 'Todas' || person.category === category;
-    const searchMatch = !search || `${person.name} ${person.job} ${person.city}`.toLowerCase().includes(search.toLowerCase());
-    return categoryMatch && searchMatch;
-  }), [category, search]);
+  useEffect(() => {
+    let active = true;
+    void getVerifiedWorkerServices().then((items) => {
+      if (active) setProfessionals(items);
+    }).catch(() => {
+      if (active) {
+        setProfessionals([]);
+        setDirectoryError('Não foi possível carregar os perfis agora. Tente novamente em instantes.');
+      }
+    });
+    return () => { active = false; };
+  }, []);
 
-  function openRequest() {
+  const visibleProfessionals = useMemo(() => (professionals ?? []).filter((person) => {
+    const categoryMatch = category === 'Todas' || person.category === category;
+    const searchMatch = !search || `${person.name} ${person.title} ${person.category} ${person.city}`.toLowerCase().includes(search.toLowerCase());
+    const cityMatch = !city || person.city.toLowerCase().includes(city.toLowerCase());
+    return categoryMatch && searchMatch && cityMatch;
+  }), [category, city, professionals, search]);
+
+  function openRequest(targetCategory?: string) {
+    setRequestInitialCategory(targetCategory ?? (category === 'Todas' ? '' : category));
     if (!user) {
       setAuthOpen(true);
       return;
@@ -60,7 +69,7 @@ export default function HomeScreen() {
             <Text style={styles.heroTitle}>Encontre quem resolve. Perto de você.</Text>
             <Text style={styles.heroText}>Descreva o que precisa e receba propostas de profissionais com identidade verificada.</Text>
             <View style={styles.heroActions}>
-              <Pressable accessibilityRole="button" onPress={openRequest} style={styles.primaryButton}>
+              <Pressable accessibilityRole="button" onPress={() => openRequest()} style={styles.primaryButton}>
                 <Text style={styles.primaryButtonText}>＋ Solicitar orçamento</Text>
               </Pressable>
               <Pressable accessibilityRole="button" onPress={() => router.push('/work')} style={styles.secondaryButton}>
@@ -74,7 +83,7 @@ export default function HomeScreen() {
               <Text style={styles.promiseCaption}>CONFIANÇA EM CADA ETAPA</Text>
             </View>
             <Text style={styles.promiseTitle}>Serviços de verdade. Pessoas verificadas.</Text>
-            <Text style={styles.promiseText}>Compare propostas, veja avaliações e escolha com mais tranquilidade.</Text>
+            <Text style={styles.promiseText}>Compare propostas, preços e requisitos com clareza antes de escolher.</Text>
             <View style={styles.promiseStats}>
               <View><Text style={styles.statValue}>RS</Text><Text style={styles.statLabel}>lançamento inicial</Text></View>
               <View><Text style={styles.statValue}>10%</Text><Text style={styles.statLabel}>comissão transparente</Text></View>
@@ -101,29 +110,31 @@ export default function HomeScreen() {
         </ScrollView>
 
         <View style={styles.professionalsHeading}>
-          <SectionTitle title="Profissionais em destaque" subtitle={city ? `Exemplos de perfis em ${city} e região` : 'Exemplos de perfis disponíveis no RS'} />
-          <Pressable onPress={() => router.push('/work')} style={styles.linkButton}><Text style={styles.linkText}>Ver mais →</Text></Pressable>
+          <SectionTitle title="Profissionais verificados" subtitle="Perfis reais e serviços ativos no Rio Grande do Sul" />
+          <Pressable onPress={() => router.push('/work')} style={styles.linkButton}><Text style={styles.linkText}>Ver pedidos →</Text></Pressable>
         </View>
         <View style={styles.profileGrid}>
-          {visibleProfessionals.map((person) => (
-            <View key={person.name} style={styles.professionalCard}>
+          {professionals === null ? <Text style={styles.empty}>Carregando profissionais verificados…</Text> : visibleProfessionals.map((person) => (
+            <View key={person.id} style={styles.professionalCard}>
               <View style={[styles.profileArt, { backgroundColor: person.color }]}><Text style={styles.profileIcon}>{person.icon}</Text><Text style={styles.profileCategory}>{person.category}</Text></View>
-              <View style={styles.personHeading}><View style={styles.personAvatar}><Text style={styles.avatarText}>{person.name.split(' ').map((part) => part[0]).slice(0, 2).join('')}</Text></View><View style={{ flex: 1 }}><Text style={styles.personName}>{person.name}</Text><Text style={styles.personJob}>{person.job}</Text></View><Text style={styles.rating}>★ {person.rating}</Text></View>
-              <Text style={styles.personMeta}>✓ Identidade verificada  ·  {person.city}, RS</Text>
-              <View style={styles.professionalFooter}><Text style={styles.professionalPrice}>{person.price}</Text><Pressable onPress={openRequest} style={styles.profileButton}><Text style={styles.profileButtonText}>Pedir orçamento</Text></Pressable></View>
+              <View style={styles.personHeading}><View style={styles.personAvatar}><Text style={styles.avatarText}>{person.name.split(' ').map((part) => part[0]).slice(0, 2).join('')}</Text></View><View style={{ flex: 1 }}><Text style={styles.personName}>{person.name}</Text><Text style={styles.personJob}>{person.title}</Text></View></View>
+              <Text style={styles.personMeta}>✓ Identidade verificada · {person.city}, RS</Text>
+              <View style={styles.professionalFooter}><Text style={styles.professionalPrice}>{person.priceLabel}</Text><Pressable onPress={() => openRequest(person.category)} style={styles.profileButton}><Text style={styles.profileButtonText}>Solicitar orçamento</Text></Pressable></View>
             </View>
           ))}
-          {!visibleProfessionals.length ? <Text style={styles.empty}>Não encontramos profissionais nessa categoria. Você ainda pode publicar um pedido de orçamento.</Text> : null}
+          {directoryError ? <Text style={styles.empty}>{directoryError}</Text> : null}
+          {professionals?.length === 0 && !directoryError ? <View style={styles.directoryEmpty}><Text style={styles.emptyTitle}>A rede CONTRATEI está começando no RS</Text><Text style={styles.empty}>Ainda não há perfis profissionais publicados. Você já pode solicitar um orçamento e receber propostas de trabalhadores verificados.</Text><Pressable onPress={() => openRequest()} style={styles.profileButton}><Text style={styles.profileButtonText}>Publicar pedido</Text></Pressable></View> : null}
+          {professionals && professionals.length > 0 && visibleProfessionals.length === 0 ? <Text style={styles.empty}>Nenhum profissional verificado corresponde a essa busca. Tente outra cidade ou categoria.</Text> : null}
         </View>
 
         <View style={styles.howCard}>
           <View style={styles.howStep}><Text style={styles.stepNumber}>1</Text><View><Text style={styles.stepTitle}>Conte o que precisa</Text><Text style={styles.stepText}>Só descrição ou descrição com fotos.</Text></View></View>
           <View style={styles.howStep}><Text style={styles.stepNumber}>2</Text><View><Text style={styles.stepTitle}>Compare propostas</Text><Text style={styles.stepText}>Preço, perfil e avaliações em um só lugar.</Text></View></View>
-          <View style={styles.howStep}><Text style={styles.stepNumber}>3</Text><View><Text style={styles.stepTitle}>Escolha com confiança</Text><Text style={styles.stepText}>Pagamento e conclusão acompanhados no app.</Text></View></View>
+          <View style={styles.howStep}><Text style={styles.stepNumber}>3</Text><View><Text style={styles.stepTitle}>Acompanhe o pedido</Text><Text style={styles.stepText}>Veja o andamento e os valores no app.</Text></View></View>
         </View>
-        <Text style={styles.disclaimer}>Versão inicial em desenvolvimento · Perfis e disponibilidade acima são exemplos.</Text>
+        <Text style={styles.disclaimer}>A verificação de identidade é feita manualmente. O CONTRATEI não confirma qualificações profissionais ou antecedentes.</Text>
       </Page>
-      <QuoteRequestModal visible={requestOpen} onClose={() => setRequestOpen(false)} onSubmit={submitRequest} />
+      <QuoteRequestModal key={requestInitialCategory} initialCategory={requestInitialCategory} visible={requestOpen} onClose={() => setRequestOpen(false)} onSubmit={submitRequest} />
       <AuthModal visible={authOpen} onClose={() => setAuthOpen(false)} />
     </View>
   );
@@ -186,13 +197,14 @@ const styles = StyleSheet.create({
   avatarText: { color: brand.navy, fontSize: 11, fontWeight: '800' },
   personName: { color: brand.ink, fontSize: 13, fontWeight: '800' },
   personJob: { color: brand.muted, fontSize: 10, marginTop: 2 },
-  rating: { color: '#9A6C1A', fontSize: 10, fontWeight: '800' },
   personMeta: { color: brand.success, fontSize: 9, fontWeight: '700', marginTop: 9 },
   professionalFooter: { alignItems: 'center', borderTopColor: brand.border, borderTopWidth: 1, flexDirection: 'row', justifyContent: 'space-between', marginTop: 12, paddingTop: 10 },
   professionalPrice: { color: brand.ink, fontSize: 10, fontWeight: '700' },
   profileButton: { backgroundColor: brand.orangeSoft, borderRadius: 9, paddingHorizontal: 9, paddingVertical: 8 },
   profileButtonText: { color: brand.orangeDark, fontSize: 9, fontWeight: '800' },
   empty: { color: brand.muted, fontSize: 13, paddingVertical: 20 },
+  directoryEmpty: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 16, borderWidth: 1, maxWidth: 720, padding: 18 },
+  emptyTitle: { color: brand.ink, fontSize: 15, fontWeight: '900' },
   howCard: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 17, borderWidth: 1, flexDirection: 'row', flexWrap: 'wrap', gap: 20, justifyContent: 'space-between', marginTop: 28, padding: 17 },
   howStep: { alignItems: 'center', flexDirection: 'row', flexGrow: 1, gap: 10, minWidth: 215 },
   stepNumber: { alignItems: 'center', backgroundColor: brand.orangeSoft, borderRadius: 18, color: brand.orangeDark, fontSize: 12, fontWeight: '900', overflow: 'hidden', paddingHorizontal: 11, paddingVertical: 8, textAlign: 'center' },

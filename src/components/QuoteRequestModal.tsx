@@ -29,13 +29,14 @@ export type QuoteRequest = {
 };
 
 type Props = {
+  initialCategory?: string;
   visible: boolean;
   onClose: () => void;
   onSubmit: (request: QuoteRequest) => Promise<void>;
 };
 
-export function QuoteRequestModal({ visible, onClose, onSubmit }: Props) {
-  const [category, setCategory] = useState('');
+export function QuoteRequestModal({ initialCategory = '', visible, onClose, onSubmit }: Props) {
+  const [category, setCategory] = useState(initialCategory);
   const [description, setDescription] = useState('');
   const [city, setCity] = useState('');
   const [date, setDate] = useState('');
@@ -72,7 +73,7 @@ export function QuoteRequestModal({ visible, onClose, onSubmit }: Props) {
     setBusy(true);
     try {
       await onSubmit({ category, description: description.trim(), city: city.trim(), date, budget, photos, requiresEpi, epiDetails, requiresMei, requiresInvoice });
-      setCategory('');
+      setCategory(initialCategory);
       setDescription('');
       setCity('');
       setDate('');

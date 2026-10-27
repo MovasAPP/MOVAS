@@ -54,6 +54,66 @@ export async function createJobRequest(request: QuoteRequest, userId: string) {
   return job.id as string;
 }
 
+export type VerifiedServiceCard = {
+  id: string;
+  workerId: string;
+  name: string;
+  title: string;
+  city: string;
+  category: string;
+  icon: string;
+  color: string;
+  priceLabel: string;
+};
+
+export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]> {
+  const { data: services, error: servicesError } = await supabase.from('worker_services')
+    .select('id, worker_id, category_id, title, city, starting_price, price_unit')
+    .eq('active', true)
+    .eq('state_code', 'RS')
+    .order('created_at', { ascending: false })
+    .limit(60);
+  if (servicesError) throw servicesError;
+  if (!services?.length) return [];
+
+  const workerIds = [...new Set(services.map((service) => service.worker_id))];
+  const { data: profiles, error: profilesError } = await supabase.from('profiles')
+    .select('id, public_name, city')
+    .in('id', workerIds);
+  if (profilesError) throw profilesError;
+
+  const profileById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+  const categoryById = new Map(Object.entries(categoryIds).map(([name, id]) => [id, name]));
+  const categoryMetaByName = new Map(categories.map((category) => [category.name, category]));
+  const priceUnitLabel: Record<string, string> = {
+    quote: 'Orçamento personalizado',
+    hour: 'Valor por hora',
+    job: 'Valor por serviço',
+    day: 'Valor por diária',
+  };
+
+  return services.flatMap((service) => {
+    const profile = profileById.get(service.worker_id);
+    if (!profile) return [];
+    const category = categoryById.get(service.category_id) ?? 'Outro';
+    const categoryMeta = categoryMetaByName.get(category);
+    const startingPrice = service.starting_price === null ? null : Number(service.starting_price);
+    return [{
+      id: service.id,
+      workerId: service.worker_id,
+      name: profile.public_name,
+      title: service.title,
+      city: service.city || profile.city || 'Rio Grande do Sul',
+      category,
+      icon: categoryMeta?.icon ?? '✦',
+      color: categoryMeta?.color ?? '#E8C6A7',
+      priceLabel: startingPrice === null
+        ? priceUnitLabel[service.price_unit] ?? 'Orçamento personalizado'
+        : `A partir de ${startingPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`,
+    }];
+  });
+}
+
 type JobRow = {
   id: string;
   category_id: string;
