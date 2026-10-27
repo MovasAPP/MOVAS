@@ -13,7 +13,7 @@ Este documento separa o que está implementado no repositório do que já foi co
 - A migration 014 impede que webhooks atrasados reabram tentativas de pagamento em estado final. Ela depende da migration 008 e ainda não foi aplicada no Supabase.
 - As Edge Functions de OAuth, checkout e webhook estão no repositório, mas ainda não foram publicadas nem receberam os segredos do Mercado Pago.
 - O app não tem `projectId` EAS configurado; os fluxos de publicação em `.eas/workflows/` ainda não estão ativos.
-- O acesso GitHub conectado não correspondeu ao proprietário do repositório privado, então não foi possível confirmar o acesso para enviar alterações. Nenhum push ou deploy foi feito.
+- A conexão GitHub atual está autenticada como `Murilobuenodeoliveira` e mostra o repositório privado do CRM Steinmetz, mas não mostra `murilobuenocontratei/Contratei`. O `origin` local para esse endereço retorna 404. Nenhum push ou deploy foi feito; não enviar este projeto ao repositório do CRM.
 
 ## Próximas etapas
 
@@ -38,7 +38,7 @@ Cadastre no Mercado Pago o callback OAuth e a URL do webhook descritos no README
 
 ### 3. GitHub privado
 
-Reconecte a integração GitHub à conta que possui o repositório privado `murilobuenocontratei/Contratei` e confirme que o repositório está autorizado. Depois disso, enviar commits à `main` pode disparar os workflows de publicação; por isso, primeiro configure Supabase e EAS.
+Na conta GitHub que deve ser dona do CONTRATEI, confirme que existe um repositório privado chamado `Contratei` e que a integração conectada tem acesso a ele. Hoje, o endereço configurado no clone não está acessível e a conta conectada só lista o repositório do CRM. Depois que o repositório correto estiver visível, atualize o `origin` para o endereço exato dele e envie os commits locais. Os workflows de publicação só devem ser ativados depois de configurar Supabase e EAS.
 
 ### 4. EAS, site e apps
 
