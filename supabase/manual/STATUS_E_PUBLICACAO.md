@@ -12,7 +12,7 @@ Este documento separa o que está implementado no repositório do que já foi co
 - A migration 013 permite substituir documentos de identidade preservando a cópia anterior até que o novo envio seja confirmado. Ela depende da migration 002 e ainda não foi aplicada no Supabase.
 - A migration 014 impede que webhooks atrasados reabram tentativas de pagamento em estado final. Ela depende da migration 008 e ainda não foi aplicada no Supabase.
 - As Edge Functions de OAuth, checkout e webhook estão no repositório, mas ainda não foram publicadas nem receberam os segredos do Mercado Pago.
-- O app não tem `projectId` EAS configurado; os fluxos de publicação em `.eas/workflows/` ainda não estão ativos.
+- O app não tem `projectId` EAS configurado e a CLI consultada nesta máquina retornou `Not logged in`; os fluxos de publicação em `.eas/workflows/` ainda não estão ativos.
 - A conexão GitHub atual está autenticada como `Murilobuenodeoliveira` e mostra o repositório privado do CRM Steinmetz, mas não mostra `murilobuenocontratei/Contratei`. O `origin` local para esse endereço retorna 404. Nenhum push ou deploy foi feito; não enviar este projeto ao repositório do CRM.
 
 ## Próximas etapas
@@ -42,7 +42,7 @@ Na conta GitHub que deve ser dona do CONTRATEI, confirme que existe um repositó
 
 ### 4. EAS, site e apps
 
-Entre no EAS com a conta própria do CONTRATEI, associe este projeto e configure o `projectId` no `app.json`. Cadastre `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` nos ambientes `preview` e `production`. Conecte o GitHub privado ao EAS para ativar os workflows versionados em `.eas/workflows/`.
+Faça login no EAS com a conta do CONTRATEI, associe este projeto e configure o `projectId` retornado pelo EAS no `app.json`. Nesta máquina não há sessão EAS ativa. Cadastre `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` nos ambientes `preview` e `production`. Conecte o GitHub privado ao EAS para ativar os workflows versionados em `.eas/workflows/`.
 
 O workflow de produção prepara a publicação do site e uma atualização OTA compatível. Alterações que mudem código nativo exigem nova build Android/iOS e publicação/validação nas lojas. Para isso, serão necessárias as contas de desenvolvedor Google Play e Apple Developer, além de credenciais de assinatura. Um domínio próprio é opcional; primeiro é possível publicar no domínio EAS.
 
