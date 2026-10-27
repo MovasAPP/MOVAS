@@ -630,24 +630,20 @@ export async function uploadWorkerVerificationDocument(input: {
   if (blob.size > 8 * 1024 * 1024) throw new Error('A imagem deve ter no máximo 8 MB.');
 
   const { data: previous, error: previousError } = await supabase.from('worker_verification_documents')
-    .select('storage_path').eq('worker_id', input.userId).eq('document_type', input.documentType).maybeSingle();
+    .select('id, storage_path').eq('worker_id', input.userId).eq('document_type', input.documentType).maybeSingle();
   if (previousError) throw previousError;
-  if (previous?.storage_path) {
-    const { error: removeFileError } = await supabase.storage.from('worker-verification').remove([previous.storage_path]);
-    if (removeFileError) throw removeFileError;
-    const { error: removeRowError } = await supabase.from('worker_verification_documents')
-      .delete().eq('worker_id', input.userId).eq('document_type', input.documentType);
-    if (removeRowError) throw removeRowError;
-  }
 
   const suffix = Math.random().toString(36).slice(2, 10);
   const extension = contentType === 'image/png' ? 'png' : contentType === 'image/webp' ? 'webp' : 'jpg';
   const path = `${input.userId}/${input.documentType}-${Date.now()}-${suffix}.${extension}`;
-  const { data: document, error: rowError } = await supabase.from('worker_verification_documents').insert({
-    worker_id: input.userId,
-    document_type: input.documentType,
-    storage_path: path,
-  }).select('id').single();
+  const rowQuery = previous
+    ? supabase.from('worker_verification_documents').update({ storage_path: path }).eq('id', previous.id)
+    : supabase.from('worker_verification_documents').insert({
+      worker_id: input.userId,
+      document_type: input.documentType,
+      storage_path: path,
+    });
+  const { data: document, error: rowError } = await rowQuery.select('id').single();
   if (rowError) throw rowError;
 
   const { error: uploadError } = await supabase.storage.from('worker-verification').upload(path, blob, {
@@ -655,9 +651,21 @@ export async function uploadWorkerVerificationDocument(input: {
     upsert: false,
   });
   if (uploadError) {
-    await supabase.from('worker_verification_documents').delete().eq('id', document.id);
+    const rollback = previous
+      ? await supabase.from('worker_verification_documents').update({ storage_path: previous.storage_path }).eq('id', document.id)
+      : await supabase.from('worker_verification_documents').delete().eq('id', document.id);
+    await supabase.storage.from('worker-verification').remove([path]);
+    if (rollback.error) {
+      throw new Error(`O envio falhou e não foi possível restaurar o registro anterior. Atualize a tela e tente novamente. (${rollback.error.message})`);
+    }
     throw uploadError;
   }
+
+  if (previous?.storage_path) {
+    const { error: cleanupError } = await supabase.storage.from('worker-verification').remove([previous.storage_path]);
+    return { previousFileCleanupPending: Boolean(cleanupError) };
+  }
+  return { previousFileCleanupPending: false };
 }
 
 export async function submitWorkerVerification() {

@@ -70,14 +70,16 @@ export default function VerificationScreen() {
     if (result.canceled || !result.assets[0]) return;
     setBusyDocument(documentType);
     try {
-      await uploadWorkerVerificationDocument({
+      const uploadResult = await uploadWorkerVerificationDocument({
         userId: user.id,
         documentType,
         uri: result.assets[0].uri,
         mimeType: result.assets[0].mimeType,
       });
       await refresh(user.id);
-      setNotice('Imagem enviada com segurança.');
+      setNotice(uploadResult.previousFileCleanupPending
+        ? 'Imagem atualizada. O arquivo anterior ficou pendente de limpeza; fale com o suporte se isso persistir.'
+        : 'Imagem enviada com segurança.');
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : 'Não foi possível enviar o documento.');
     } finally {
