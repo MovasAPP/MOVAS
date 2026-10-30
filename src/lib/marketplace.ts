@@ -90,14 +90,15 @@ export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]
       : Promise.resolve({ data: null, error: null }),
   ]);
   if (profilesError) throw profilesError;
-  if (ratingsError) throw ratingsError;
+  const ratingsFunctionNotInstalled = ratingsError?.code === 'PGRST202' || ratingsError?.code === '42883';
+  if (ratingsError && !ratingsFunctionNotInstalled) throw ratingsError;
   if (ownProfileResult.error) throw ownProfileResult.error;
   const ownProfileIsVerified = ownProfileResult.data?.can_work === true && ownProfileResult.data.verification_status === 'verified';
 
   const profileById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
   type WorkerRatingRow = { worker_id: string; average_rating: number; review_count: number };
   const ratingsByWorker = new Map<string, WorkerRatingRow>(
-    ((ratings ?? []) as WorkerRatingRow[]).map((rating) => [rating.worker_id, rating]),
+    (((ratingsFunctionNotInstalled ? [] : ratings) ?? []) as WorkerRatingRow[]).map((rating) => [rating.worker_id, rating]),
   );
   const categoryById = new Map(Object.entries(categoryIds).map(([name, id]) => [id, name]));
   const categoryMetaByName = new Map(categories.map((category) => [category.name, category]));
