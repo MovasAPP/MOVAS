@@ -46,7 +46,8 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 112
         }
-      ]
+      ],
+      "./plugins/with-safe-gradle-project-name.js"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -65,4 +66,3 @@
     "owner": "movasapp"
   }
 }
-
