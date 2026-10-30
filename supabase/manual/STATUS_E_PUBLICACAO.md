@@ -13,9 +13,10 @@ Este documento separa o que está implementado no repositório do que já foi co
 - A migration 014 impede que webhooks atrasados reabram tentativas de pagamento em estado final. Ela depende da migration 008 e ainda não foi aplicada no Supabase.
 - A migration 015 remove a política ampla de leitura de pedidos abertos e conserva o acesso apenas para o contratante, o profissional contratado e profissionais verificados. Ela depende das migrations 003 e 010 e ainda não foi aplicada no Supabase.
 - As Edge Functions de OAuth, checkout e webhook estão no repositório, mas ainda não foram publicadas nem receberam os segredos do Mercado Pago.
-- O projeto EAS `@contratei.app/contratei` está criado e associado ao `projectId` `4707f645-b53b-43cf-b9ac-466dc225a789`. A URL e a chave publicável do Supabase estão cadastradas como variáveis plaintext nos ambientes EAS `preview` e `production`.
-- A build interna de preview Android 1.0.0 foi concluída no EAS (build `ffe83a7a-ddd0-4852-856d-e33e82a7b768`). O APK pode ser baixado em https://expo.dev/artifacts/eas/7j8teoF2IHcAE8xADOw14yw_iqfAvzNZ8Tct48YQ8Q4.apk; é uma build para testes, ainda não publicada na Play Store.
-- A tentativa de build iOS interna foi interrompida porque o EAS não encontrou credenciais de assinatura para distribuição interna. São necessárias as credenciais Apple Developer antes de gerar uma versão instalável para iPhone.
+- O projeto EAS ativo é `@movasapp/movas`, `projectId` `b600ab77-9034-4bcb-b3a8-ac4863491a77`, na conta Expo `movasapp`. A URL e a chave publicável do Supabase estão cadastradas nos ambientes EAS `preview` e `production`.
+- A build Android de produção foi concluída em 30/10/2026 (build `daefbdf8-11e8-4c16-b5fc-9399f18ffbf7`, versão 1.0.0, `versionCode` 5). O pacote AAB para enviar à Play Console está em https://expo.dev/artifacts/eas/6WFuOi9ivXttwglycSYBGRTgnw6VCuccU0shY4FRwcE.aab. Ainda não foi enviado nem publicado na Play Store.
+- A build iOS ainda não foi gerada. A tentativa anterior apontou que a conta Apple não tinha equipe de desenvolvedor associada; confirme que a adesão paga ao Apple Developer Program foi concluída e que uma equipe aparece na conta antes de gerar a build.
+- O repositório GitHub `MovasAPP/MOVAS` está conectado ao EAS. O workflow de produção já foi validado e executado com sucesso; o push que corrigiu a build Android está publicado na branch `main`.
 - O repositório público `MovasAPP/MOVAS` pertence à conta MOVA$ e recebe a base compartilhada do site, Android e iOS. O arquivo local `.env.local` é ignorado e não deve ser enviado.
 
 ## Próximas etapas
@@ -41,13 +42,13 @@ Cadastre no Mercado Pago o callback OAuth e a URL do webhook descritos no README
 
 ### 3. GitHub
 
-O código do site e dos apps está no repositório `MovasAPP/MOVAS`. O repositório é público, conforme escolha do Murilo. Nunca enviar `.env.local` ou credenciais secretas. Os workflows de publicação só devem ser ativados depois de configurar Supabase e EAS.
+O código do site e dos apps está no repositório `MovasAPP/MOVAS`. O repositório é público, conforme escolha do Murilo. Nunca enviar `.env.local` ou credenciais secretas. A conexão com EAS está ativa e o workflow já foi executado.
 
 ### 4. EAS, site e apps
 
-O projeto EAS e as variáveis de ambiente já estão configurados. Para ativar os workflows versionados em `.eas/workflows/`, conecte o repositório `MovasAPP/MOVAS` ao projeto EAS. O fluxo publica o site e envia atualização OTA compatível depois de um push na branch `main`.
+O projeto EAS e as variáveis de ambiente estão configurados. O repositório `MovasAPP/MOVAS` está conectado ao projeto EAS. O fluxo publica o site e envia atualização OTA compatível após um push na branch `main`.
 
-O workflow de produção prepara a publicação do site e uma atualização OTA compatível. Alterações que mudem código nativo exigem nova build Android/iOS e publicação/validação nas lojas. Para isso, serão necessárias as contas de desenvolvedor Google Play e Apple Developer, além de credenciais de assinatura. Um domínio próprio é opcional; primeiro é possível publicar no domínio EAS.
+O site está publicado em https://movas.expo.app. A build Android AAB já está pronta, mas falta concluir o cadastro Google Play, criar a ficha do app e configurar a credencial de serviço para envio. Para iOS, falta confirmar a adesão Apple Developer com uma equipe ativa, gerar a build e preparar o TestFlight/App Store Connect. Um domínio próprio é opcional; o site pode continuar no endereço EAS.
 
 ### 5. Teste de ponta a ponta antes do lançamento
 
