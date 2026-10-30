@@ -1,6 +1,8 @@
-# CONTRATEI
+# MOVA$
 
-Aplicativo independente de contratação de serviços, criado para Android, iOS e web com Expo e React Native. O projeto pertence ao produto CONTRATEI, de Murilo Bueno, e não está conectado ao CRM da Steinmetz.
+Aplicativo independente de contratação de serviços, criado para Android, iOS e web com Expo e React Native. O projeto pertence ao produto MOVA$, de Murilo Bueno, e não está conectado ao CRM da Steinmetz.
+
+**Identidade da marca:** MOVA$ (também escrito MOVAS quando um identificador técnico não aceita `$`). O nome visível, as cores, o ícone, o site e os textos do app usam MOVA$. O slug do projeto EAS e o esquema de retorno OAuth ainda usam `contratei` para manter compatibilidade com o projeto EAS e a lista de redirecionamentos já preparada no Supabase; só devem mudar junto com a configuração desses serviços.
 
 ## Rodar localmente
 
@@ -24,7 +26,7 @@ npm run web
 - Área de oportunidades para profissionais e formulário de proposta com cálculo ilustrativo da comissão de 10% paga pelo contratante.
 - Telas de segurança/privacidade e perfil com alternância entre contratar e trabalhar.
 - Navegação responsiva compartilhada entre web, Android e iOS.
-- Cadastro e entrada com e-mail e senha conectados ao Supabase Auth do projeto próprio CONTRATEI.
+- Cadastro e entrada com e-mail e senha conectados ao Supabase Auth do projeto próprio MOVA$.
 - Confirmação de e-mail no cadastro e recuperação de senha com link de retorno compatível com Android, iOS e web.
 - Publicação real de pedidos no Supabase, com fotos no bucket privado `job-photos`.
 - Mural de pedidos abertos e envio de propostas no banco, respeitando as políticas RLS.
@@ -46,7 +48,7 @@ npm run web
 
 O cadastro, o perfil profissional, os serviços, a publicação de pedidos, o upload privado de fotos, o diretório de serviços, a lista de pedidos, as propostas, os documentos e a revisão administrativa estão conectados ao Supabase. O código local também inclui pagamento, chat, conclusão, avaliações, disputas e notificações, mas essas partes dependem das migrations 006–015 e das Edge Functions publicadas. A navegação e o diretório são públicos; publicar pedidos, enviar propostas e ver os próprios dados exige conta. Propostas e acesso a fotos dos pedidos exigem trabalhador verificado. A conta owner de revisão já está cadastrada em `staff_members`.
 
-O esquema e as políticas RLS estão em `supabase/migrations/`. As migrations 001–005 foram executadas no projeto CONTRATEI. A regra de preço confirmada é: o trabalhador informa o valor do serviço, o cliente paga mais 10% de taxa CONTRATEI, e a tarifa de processamento do Mercado Pago é descontada do recebimento do profissional. As migrations 006–008 preparam OAuth, checkout e pagamentos; 009–010 liberam conversa, conclusão e avaliações; 011–012 acrescentam suporte e notificações; 013 permite a substituição segura de documentos de identidade; 014 impede regressão do estado do pagamento em caso de webhooks fora de ordem; 015 restaura o filtro de verificação no feed de pedidos. As migrations 006–015 ainda precisam ser executadas. As regras públicas revelam apenas nome público, cidade, dados do serviço e agregados de avaliações de profissionais verificados; contatos, documentos, pedidos, propostas, mensagens e credenciais de recebimento continuam protegidos.
+O esquema e as políticas RLS estão em `supabase/migrations/`. As migrations 001–005 foram executadas no projeto Supabase exclusivo do marketplace, criado originalmente como CONTRATEI (referência `mzcbpilcbmpvfzgknqdg`). A marca visível do produto agora é MOVA$. A regra de preço confirmada é: o trabalhador informa o valor do serviço, o cliente paga mais 10% de taxa MOVA$, e a tarifa de processamento do Mercado Pago é descontada do recebimento do profissional. As migrations 006–008 preparam OAuth, checkout e pagamentos; 009–010 liberam conversa, conclusão e avaliações; 011–012 acrescentam suporte e notificações; 013 permite a substituição segura de documentos de identidade; 014 impede regressão do estado do pagamento em caso de webhooks fora de ordem; 015 restaura o filtro de verificação no feed de pedidos. As migrations 006–015 ainda precisam ser executadas. As regras públicas revelam apenas nome público, cidade, dados do serviço e agregados de avaliações de profissionais verificados; contatos, documentos, pedidos, propostas, mensagens e credenciais de recebimento continuam protegidos.
 
 A URL e a chave publicável fornecidas foram configuradas somente no `.env.local`, que fica fora do Git. Use `.env.example` como modelo em outra máquina. Uma chave `publishable` é apropriada para o app; nunca inclua a `secret`/`service_role` no cliente.
 
@@ -54,7 +56,7 @@ A URL e a chave publicável fornecidas foram configuradas somente no `.env.local
 
 O site é exportado como páginas estáticas do Expo Router (`npx expo export --platform web`). Depois de associar uma conta e projeto EAS e ligar o GitHub, o fluxo em `.eas/workflows/production.yml` valida o código e, após cada envio à branch `main`, publica a versão web no EAS Hosting e uma atualização OTA no canal `production`. Mudanças que alteram código nativo ainda exigem uma nova build Android/iOS e aprovação nas lojas; `runtimeVersion` usa a versão do app para evitar aplicar atualização a uma versão incompatível.
 
-Antes de ativar o fluxo, crie ou acesse uma conta Expo com o e-mail do Murilo, execute `npx eas-cli@latest login` e `npx eas-cli@latest update:configure` no projeto CONTRATEI. Isso cria/associa o projeto EAS e grava o `projectId` e a URL reais no `app.json`; não invente nem reutilize o ID do CRM. Configure `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` nos ambientes `preview` e `production` do EAS. Depois conecte o repositório GitHub privado nas configurações do projeto EAS para habilitar os gatilhos `push`.
+Antes de ativar o fluxo, crie ou acesse uma conta Expo com o e-mail do Murilo, execute `npx eas-cli@latest login` e `npx eas-cli@latest update:configure` no projeto MOVA$. Isso cria/associa o projeto EAS e grava o `projectId` e a URL reais no `app.json`; não invente nem reutilize o ID do CRM. Configure `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` nos ambientes `preview` e `production` do EAS. Conecte o repositório GitHub `MovasAPP/MOVAS` às configurações do projeto EAS para habilitar os gatilhos `push`.
 
 O workflow `.eas/workflows/native-build.yml` cria builds de produção sob demanda. A publicação nas lojas exige contas e credenciais de desenvolvedor do Murilo; o workflow não envia builds automaticamente para as lojas. Um domínio próprio pode ser associado depois de adquirir o domínio e ativar um plano EAS com suporte a domínio personalizado. Até lá, o EAS fornece um endereço `*.expo.app`.
 
@@ -66,7 +68,7 @@ Para criar a aplicação Mercado Pago, use como callback OAuth `https://mzcbpilc
 
 Ainda falta implementar estorno automatizado e definir regras operacionais para cancelamento, chargeback e mediação. Não colocar chaves secretas no app; manter segredos em funções de servidor.
 
-O projeto de backend do CONTRATEI é separado do CRM da Steinmetz e está configurado localmente neste app. Não aplique a migration no projeto da Steinmetz.
+O projeto de backend do marketplace é separado do CRM da Steinmetz e está configurado localmente neste app. Não aplique a migration no projeto da Steinmetz.
 
 ## Verificações locais
 

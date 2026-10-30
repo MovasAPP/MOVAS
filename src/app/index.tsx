@@ -65,7 +65,7 @@ export default function HomeScreen() {
       <Page>
         <View style={styles.hero}>
           <View style={styles.heroCopy}>
-            <Text style={styles.eyebrow}>RIO GRANDE DO SUL · CONTRATEI</Text>
+            <Text style={styles.eyebrow}>RIO GRANDE DO SUL · MOVA$</Text>
             <Text style={styles.heroTitle}>Encontre quem resolve. Perto de você.</Text>
             <Text style={styles.heroText}>Descreva o que precisa e receba propostas de profissionais com identidade verificada.</Text>
             <View style={styles.heroActions}>
@@ -124,7 +124,7 @@ export default function HomeScreen() {
             </View>
           ))}
           {directoryError ? <Text style={styles.empty}>{directoryError}</Text> : null}
-          {professionals?.length === 0 && !directoryError ? <View style={styles.directoryEmpty}><Text style={styles.emptyTitle}>A rede CONTRATEI está começando no RS</Text><Text style={styles.empty}>Ainda não há perfis profissionais publicados. Você já pode solicitar um orçamento e receber propostas de trabalhadores verificados.</Text><Pressable onPress={() => openRequest()} style={styles.profileButton}><Text style={styles.profileButtonText}>Publicar pedido</Text></Pressable></View> : null}
+          {professionals?.length === 0 && !directoryError ? <View style={styles.directoryEmpty}><Text style={styles.emptyTitle}>A rede MOVA$ está começando no RS</Text><Text style={styles.empty}>Ainda não há perfis profissionais publicados. Você já pode solicitar um orçamento e receber propostas de trabalhadores verificados.</Text><Pressable onPress={() => openRequest()} style={styles.profileButton}><Text style={styles.profileButtonText}>Publicar pedido</Text></Pressable></View> : null}
           {professionals && professionals.length > 0 && visibleProfessionals.length === 0 ? <Text style={styles.empty}>Nenhum profissional verificado corresponde a essa busca. Tente outra cidade ou categoria.</Text> : null}
         </View>
 
@@ -133,7 +133,7 @@ export default function HomeScreen() {
           <View style={styles.howStep}><Text style={styles.stepNumber}>2</Text><View><Text style={styles.stepTitle}>Compare propostas</Text><Text style={styles.stepText}>Preço, perfil e requisitos em um só lugar.</Text></View></View>
           <View style={styles.howStep}><Text style={styles.stepNumber}>3</Text><View><Text style={styles.stepTitle}>Acompanhe o pedido</Text><Text style={styles.stepText}>Veja o andamento e os valores no app.</Text></View></View>
         </View>
-        <Text style={styles.disclaimer}>A verificação de identidade é feita manualmente. O CONTRATEI não confirma qualificações profissionais ou antecedentes.</Text>
+        <Text style={styles.disclaimer}>A verificação de identidade é feita manualmente. O MOVA$ não confirma qualificações profissionais ou antecedentes.</Text>
       </Page>
       <QuoteRequestModal key={requestInitialCategory} initialCategory={requestInitialCategory} visible={requestOpen} onClose={() => setRequestOpen(false)} onSubmit={submitRequest} />
       <AuthModal visible={authOpen} onClose={() => setAuthOpen(false)} />
@@ -153,15 +153,15 @@ const styles = StyleSheet.create({
   heroTitle: { color: brand.ink, fontSize: 42, fontWeight: '900', letterSpacing: -2.1, lineHeight: 46, marginTop: 13, maxWidth: 600 },
   heroText: { color: brand.muted, fontSize: 15, lineHeight: 23, marginTop: 13, maxWidth: 530 },
   heroActions: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 20 },
-  primaryButton: { alignItems: 'center', backgroundColor: brand.orange, borderRadius: 12, minHeight: 47, justifyContent: 'center', paddingHorizontal: 16 },
+  primaryButton: { alignItems: 'center', backgroundColor: brand.orangeDark, borderRadius: 12, minHeight: 47, justifyContent: 'center', paddingHorizontal: 16 },
   primaryButtonText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   secondaryButton: { alignItems: 'center', backgroundColor: brand.orangeSoft, borderRadius: 12, minHeight: 47, justifyContent: 'center', paddingHorizontal: 16 },
   secondaryButtonText: { color: brand.orangeDark, fontSize: 13, fontWeight: '800' },
   promiseCard: { backgroundColor: brand.navy, borderRadius: 22, flex: 0.92, minHeight: 240, minWidth: 285, overflow: 'hidden', padding: 22 },
   promiseTop: { alignItems: 'center', flexDirection: 'row', gap: 9 },
-  promiseMark: { alignItems: 'center', backgroundColor: brand.yellow, borderRadius: 10, height: 27, justifyContent: 'center', width: 27 },
+  promiseMark: { alignItems: 'center', backgroundColor: brand.green, borderRadius: 10, height: 27, justifyContent: 'center', width: 27 },
   promiseCheck: { color: brand.ink, fontSize: 15, fontWeight: '900' },
-  promiseCaption: { color: brand.yellow, fontSize: 9, fontWeight: '900', letterSpacing: 1 },
+  promiseCaption: { color: brand.orange, fontSize: 9, fontWeight: '900', letterSpacing: 1 },
   promiseTitle: { color: '#fff', fontSize: 22, fontWeight: '800', letterSpacing: -0.6, lineHeight: 26, marginTop: 15, maxWidth: 320 },
   promiseText: { color: '#C7D4DA', fontSize: 12, lineHeight: 18, marginTop: 7, maxWidth: 330 },
   promiseStats: { alignItems: 'flex-end', flexDirection: 'row', flexWrap: 'wrap', gap: 20, marginTop: 20 },
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   cityInput: { color: brand.ink, flex: 1, fontSize: 13 },
   categoryList: { gap: 8, paddingBottom: 2 },
   categoryChip: { alignItems: 'center', backgroundColor: '#fff', borderColor: brand.border, borderRadius: 30, borderWidth: 1, flexDirection: 'row', gap: 6, paddingHorizontal: 12, paddingVertical: 9 },
-  categoryChipActive: { backgroundColor: brand.orange, borderColor: brand.orange },
+  categoryChipActive: { backgroundColor: brand.orangeDark, borderColor: brand.orange },
   chipIcon: { fontSize: 13 },
   chipText: { color: '#52625D', fontSize: 11, fontWeight: '700' },
   chipTextActive: { color: '#fff' },

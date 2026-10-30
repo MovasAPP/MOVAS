@@ -67,7 +67,7 @@ export function AuthModal({ visible, onClose }: Props) {
           <View style={styles.sheet}>
             <View style={styles.heading}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.eyebrow}>CONTRATEI · CONTA PESSOAL</Text>
+                <Text style={styles.eyebrow}>MOVA$ · CONTA PESSOAL</Text>
                 <Text style={styles.title}>{confirmationSent ? 'Confira seu e-mail' : recoverySent ? 'Confira sua caixa de entrada' : mode === 'recover' ? 'Recupere sua senha' : mode === 'signin' ? 'Que bom ter você de volta' : 'Crie sua conta'}</Text>
                 <Text style={styles.subtitle}>
                   {confirmationSent ? `Enviamos um link de confirmação para ${email}. Depois, volte aqui para entrar.` : recoverySent ? 'Se houver uma conta com esse e-mail, enviaremos um link seguro para criar outra senha.' : mode === 'recover' ? 'Informe o e-mail da sua conta. Enviaremos um link para você criar uma nova senha.' : 'A mesma conta serve para contratar e trabalhar.'}
@@ -77,12 +77,12 @@ export function AuthModal({ visible, onClose }: Props) {
             </View>
             {confirmationSent ? (
               <View style={styles.confirmationBox}>
-                <Text style={styles.confirmationText}>Abra o link para confirmar seu e-mail. No celular, ele volta ao app; no site, volta ao CONTRATEI. Não compartilhe esse link.</Text>
+                <Text style={styles.confirmationText}>Abra o link para confirmar seu e-mail. No celular, ele volta ao app; no site, volta ao MOVA$. Não compartilhe esse link.</Text>
                 <Pressable onPress={() => switchMode('signin')} style={styles.submit}><Text style={styles.submitText}>Já confirmei · entrar</Text></Pressable>
               </View>
             ) : recoverySent ? (
               <View style={styles.confirmationBox}>
-                <Text style={styles.confirmationText}>Abra o link no mesmo dispositivo onde o CONTRATEI está instalado. No site, o link abrirá a tela para criar uma nova senha.</Text>
+                <Text style={styles.confirmationText}>Abra o link no mesmo dispositivo onde o MOVA$ está instalado. No site, o link abrirá a tela para criar uma nova senha.</Text>
                 <Pressable onPress={() => switchMode('signin')} style={styles.submit}><Text style={styles.submitText}>Voltar para entrar</Text></Pressable>
               </View>
             ) : (
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   error: { color: '#B42318', fontSize: 11, fontWeight: '700', marginTop: 10 },
   confirmationBox: { backgroundColor: brand.successSoft, borderRadius: 13, padding: 14 },
   confirmationText: { color: brand.success, fontSize: 12, lineHeight: 18 },
-  submit: { alignItems: 'center', backgroundColor: brand.orange, borderRadius: 12, marginTop: 16, padding: 14 },
+  submit: { alignItems: 'center', backgroundColor: brand.orangeDark, borderRadius: 12, marginTop: 16, padding: 14 },
   submitDisabled: { opacity: 0.6 },
   submitText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   forgotButton: { alignSelf: 'center', marginTop: 12, padding: 4 },

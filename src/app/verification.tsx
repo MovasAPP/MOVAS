@@ -135,7 +135,7 @@ export default function VerificationScreen() {
               <DocumentRow title="Frente do documento" description="CNH ou documento oficial com foto." uploaded={hasFront} busy={busyDocument === 'identity_front'} disabled={Boolean(busyDocument)} onPress={() => void chooseDocument('identity_front')} />
               <DocumentRow title="Verso do documento" description="Fotografe o verso inteiro, com os dados legíveis." uploaded={hasBack} busy={busyDocument === 'identity_back'} disabled={Boolean(busyDocument)} onPress={() => void chooseDocument('identity_back')} />
               <Text style={styles.privacyNote}>As imagens ficam em armazenamento privado. Só você e a equipe de verificação autorizada podem acessá-las. Não envie documentos de terceiros.</Text>
-              <Text style={styles.consent}>Ao enviar, você confirma que este documento é seu e autoriza seu uso para verificar sua identidade no CONTRATEI.</Text>
+              <Text style={styles.consent}>Ao enviar, você confirma que este documento é seu e autoriza seu uso para verificar sua identidade no MOVA$.</Text>
               <Pressable disabled={!hasFront || !hasBack || submitting || Boolean(busyDocument)} onPress={() => void sendForReview()} style={[styles.primaryButton, (!hasFront || !hasBack || submitting || Boolean(busyDocument)) && styles.disabled]}>
                 <Text style={styles.primaryButtonText}>{submitting ? 'Enviando para análise…' : 'Solicitar verificação'}</Text>
               </Pressable>
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   uploadButtonText: { color: brand.orangeDark, fontSize: 10, fontWeight: '800' },
   privacyNote: { backgroundColor: brand.successSoft, borderRadius: 10, color: brand.success, fontSize: 10, lineHeight: 15, marginTop: 14, padding: 11 },
   consent: { color: brand.muted, fontSize: 9, lineHeight: 14, marginTop: 12 },
-  primaryButton: { alignItems: 'center', alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 11, marginTop: 15, paddingHorizontal: 16, paddingVertical: 12 },
+  primaryButton: { alignItems: 'center', alignSelf: 'flex-start', backgroundColor: brand.orangeDark, borderRadius: 11, marginTop: 15, paddingHorizontal: 16, paddingVertical: 12 },
   primaryButtonText: { color: '#fff', fontSize: 11, fontWeight: '900' },
   disabled: { opacity: 0.5 },
   notice: { color: brand.success, fontSize: 11, fontWeight: '700', marginTop: 13, maxWidth: 760 },

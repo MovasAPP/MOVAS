@@ -34,7 +34,7 @@ export default function ProfileScreen() {
   const [mercadoPagoConnected, setMercadoPagoConnected] = useState<boolean | null>(null);
   const [mercadoPagoBusy, setMercadoPagoBusy] = useState(false);
   const [mercadoPagoError, setMercadoPagoError] = useState('');
-  const displayName = user?.user_metadata.public_name || user?.email?.split('@')[0] || 'Seu perfil CONTRATEI';
+  const displayName = user?.user_metadata.public_name || user?.email?.split('@')[0] || 'Seu perfil MOVA$';
   const parsedProfilePrice = parseBrazilianAmount(price);
   const pricePreviewAmount = parsedProfilePrice !== null && Number.isFinite(parsedProfilePrice) ? parsedProfilePrice : null;
 
@@ -206,7 +206,7 @@ export default function ProfileScreen() {
             {currentProfile?.canWork && status !== 'verified' ? <Pressable onPress={() => router.push('/verification')} style={styles.verifyLink}><Text style={styles.verifyLinkText}>{status === 'pending' ? 'Acompanhar análise →' : status === 'rejected' ? 'Corrigir documentos →' : 'Enviar documentos →'}</Text></Pressable> : null}
             {currentProfile?.canWork && status === 'verified' ? <View style={styles.paymentPanel}>
               <Text style={styles.formTitle}>Recebimentos pelo Mercado Pago</Text>
-              <Text style={styles.formHint}>Conecte sua conta Mercado Pago para preparar recebimentos pelo Checkout Pro. O CONTRATEI não vê sua senha nem os dados do cartão.</Text>
+              <Text style={styles.formHint}>Conecte sua conta Mercado Pago para preparar recebimentos pelo Checkout Pro. O MOVA$ não vê sua senha nem os dados do cartão.</Text>
               <Text style={[styles.paymentStatus, mercadoPagoConnected ? styles.paymentConnected : null]}>{mercadoPagoConnected === null ? 'Status da conexão indisponível' : mercadoPagoConnected ? '✓ Conta Mercado Pago conectada' : 'Conta Mercado Pago não conectada'}</Text>
               <Pressable disabled={mercadoPagoBusy} onPress={() => void connectMercadoPago()} style={[styles.submitButton, mercadoPagoBusy && { opacity: 0.65 }]}><Text style={styles.submitButtonText}>{mercadoPagoBusy ? 'Abrindo Mercado Pago…' : mercadoPagoConnected ? 'Reconectar Mercado Pago' : 'Conectar Mercado Pago'}</Text></Pressable>
               {mercadoPagoError ? <Text accessibilityRole="alert" style={styles.errorMessage}>{mercadoPagoError}</Text> : null}
@@ -231,7 +231,7 @@ export default function ProfileScreen() {
             <TextInput multiline onChangeText={setDescription} placeholder="Conte sua experiência e o que está incluído." placeholderTextColor="#87938E" style={[styles.input, styles.textArea]} value={description} />
             <View style={styles.inputRow}>
               <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Cidade onde atende</Text><TextInput onChangeText={setCity} placeholder="Ex.: Tramandaí" placeholderTextColor="#87938E" style={styles.input} value={city} /></View>
-              <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Seu preço inicial (opcional)</Text><TextInput keyboardType="decimal-pad" onChangeText={setPrice} placeholder="R$" placeholderTextColor="#87938E" style={styles.input} value={price} />{pricePreviewAmount !== null && pricePreviewAmount > 0 ? <Text style={styles.priceHint}>Cliente pagará {money(pricePreviewAmount + pricePreviewAmount * 0.1)} com taxa de 10%. A tarifa Mercado Pago será descontada do seu recebimento.</Text> : <Text style={styles.priceHint}>A taxa CONTRATEI de 10% é paga pelo cliente e será mostrada separadamente.</Text>}</View>
+              <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Seu preço inicial (opcional)</Text><TextInput keyboardType="decimal-pad" onChangeText={setPrice} placeholder="R$" placeholderTextColor="#87938E" style={styles.input} value={price} />{pricePreviewAmount !== null && pricePreviewAmount > 0 ? <Text style={styles.priceHint}>Cliente pagará {money(pricePreviewAmount + pricePreviewAmount * 0.1)} com taxa de 10%. A tarifa Mercado Pago será descontada do seu recebimento.</Text> : <Text style={styles.priceHint}>A taxa MOVA$ de 10% é paga pelo cliente e será mostrada separadamente.</Text>}</View>
             </View>
             <Text style={styles.fieldLabel}>Como cobra?</Text>
             <View style={styles.unitRow}>{(['quote', 'hour', 'job', 'day'] as const).map((unit) => <Pressable key={unit} onPress={() => setPriceUnit(unit)} style={[styles.unitChip, priceUnit === unit && styles.unitChipActive]}><Text style={[styles.unitText, priceUnit === unit && styles.unitTextActive]}>{unitLabel(unit)}</Text></Pressable>)}</View>
@@ -243,7 +243,7 @@ export default function ProfileScreen() {
         <SectionTitle title="Sua confiança" subtitle="Acompanhe aqui o status da verificação do seu perfil." />
         <Pressable onPress={() => router.push('/safety')} style={styles.securityRow}><View style={styles.securityIcon}><Text>🔒</Text></View><View style={{ flex: 1 }}><Text style={styles.securityTitle}>Identidade e privacidade</Text><Text style={styles.securityText}>Veja como documentos e informações serão protegidos.</Text></View><Text style={styles.arrow}>›</Text></Pressable>
         {canReview ? <Pressable onPress={() => router.push('/review')} style={styles.securityRow}><View style={[styles.securityIcon, { backgroundColor: '#FFF2D7' }]}><Text>✓</Text></View><View style={{ flex: 1 }}><Text style={styles.securityTitle}>Revisão da equipe</Text><Text style={styles.securityText}>Analisar solicitações de verificação pendentes.</Text></View><Text style={styles.arrow}>›</Text></Pressable> : null}
-        <View style={styles.note}><Text style={styles.noteText}>CONTRATEI pertence a Murilo Bueno e é um projeto independente da Steinmetz.</Text></View>
+        <View style={styles.note}><Text style={styles.noteText}>MOVA$ pertence a Murilo Bueno e é um projeto independente da Steinmetz.</Text></View>
       </Page>
       <AuthModal visible={authOpen} onClose={() => setAuthOpen(false)} />
     </View>
@@ -269,19 +269,19 @@ const styles = StyleSheet.create({
   name: { color: brand.ink, fontSize: 13, fontWeight: '800' },
   city: { color: brand.muted, fontSize: 10, marginTop: 4 },
   badge: { color: brand.success, fontSize: 9, fontWeight: '900' },
-  signButton: { backgroundColor: brand.orange, borderRadius: 9, paddingHorizontal: 13, paddingVertical: 9 },
+  signButton: { backgroundColor: brand.orangeDark, borderRadius: 9, paddingHorizontal: 13, paddingVertical: 9 },
   signButtonText: { color: '#fff', fontSize: 10, fontWeight: '900' },
   modeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   modeCard: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 16, borderWidth: 1, flexGrow: 1, maxWidth: 420, minHeight: 190, minWidth: 245, padding: 17 },
   workCard: { backgroundColor: brand.navy, borderColor: brand.navy },
   modeIcon: { color: brand.orange, fontSize: 24 },
-  workModeIcon: { color: brand.yellow },
+  workModeIcon: { color: brand.orange },
   modeTitle: { color: brand.ink, fontSize: 16, fontWeight: '800', marginTop: 10 },
   workModeTitle: { color: '#fff' },
   modeText: { color: brand.muted, fontSize: 11, lineHeight: 17, marginTop: 6, maxWidth: 300 },
   workModeText: { color: '#C7D4DA' },
   modeLink: { color: brand.orangeDark, fontSize: 10, fontWeight: '800', marginTop: 'auto', paddingTop: 16 },
-  workModeLink: { color: brand.yellow },
+  workModeLink: { color: brand.orange },
   requestsLink: { alignItems: 'center', backgroundColor: '#fff', borderColor: brand.border, borderRadius: 14, borderWidth: 1, flexDirection: 'row', gap: 11, marginTop: 13, maxWidth: 860, padding: 13 },
   requestsIcon: { alignItems: 'center', backgroundColor: brand.orangeSoft, borderRadius: 10, height: 37, justifyContent: 'center', width: 37 },
   requestsIconText: { color: brand.orangeDark, fontSize: 18 },
@@ -326,11 +326,11 @@ const styles = StyleSheet.create({
   inputRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   unitRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   unitChip: { backgroundColor: '#F5F7F5', borderColor: brand.border, borderRadius: 9, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 8 },
-  unitChipActive: { backgroundColor: brand.orange, borderColor: brand.orange },
+  unitChipActive: { backgroundColor: brand.orangeDark, borderColor: brand.orange },
   unitText: { color: brand.ink, fontSize: 10, fontWeight: '700' },
   unitTextActive: { color: '#fff' },
   successMessage: { color: brand.success, fontSize: 11, fontWeight: '700', marginTop: 12 },
   errorMessage: { color: '#B42318', fontSize: 11, fontWeight: '700', marginTop: 12 },
-  submitButton: { alignItems: 'center', backgroundColor: brand.orange, borderRadius: 11, marginTop: 16, padding: 13 },
+  submitButton: { alignItems: 'center', backgroundColor: brand.orangeDark, borderRadius: 11, marginTop: 16, padding: 13 },
   submitButtonText: { color: '#fff', fontSize: 12, fontWeight: '900' },
 });

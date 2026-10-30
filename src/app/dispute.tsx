@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   reasonText: { color: brand.muted, fontSize: 9, fontWeight: '700' },
   reasonTextSelected: { color: brand.orangeDark },
   input: { backgroundColor: '#F7F8F7', borderColor: brand.border, borderRadius: 9, borderWidth: 1, color: brand.ink, fontSize: 11, marginTop: 7, minHeight: 125, padding: 10, textAlignVertical: 'top' },
-  submit: { alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 9, marginTop: 13, paddingHorizontal: 13, paddingVertical: 10 },
+  submit: { alignSelf: 'flex-start', backgroundColor: brand.orangeDark, borderRadius: 9, marginTop: 13, paddingHorizontal: 13, paddingVertical: 10 },
   submitText: { color: '#fff', fontSize: 10, fontWeight: '900' },
   status: { color: brand.orangeDark, fontSize: 11, fontWeight: '900' },
   body: { color: brand.ink, fontSize: 11, lineHeight: 18, marginTop: 6 },

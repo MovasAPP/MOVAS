@@ -21,11 +21,11 @@ function resultResponse(platform: string | null, result: 'connected' | 'cancelle
   }
 
   const message = result === 'connected'
-    ? 'Conta Mercado Pago conectada. Volte ao CONTRATEI para continuar.'
+    ? 'Conta Mercado Pago conectada. Volte ao MOVA$ para continuar.'
     : result === 'cancelled'
-      ? 'A conexão não foi autorizada. Você pode tentar novamente pelo CONTRATEI.'
-      : 'Não foi possível concluir a conexão. Volte ao CONTRATEI e tente novamente.';
-  return new Response(`<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>CONTRATEI · Mercado Pago</title><body style="font:16px system-ui;max-width:560px;margin:12vh auto;padding:24px;color:#162a37"><h1>CONTRATEI</h1><p>${message}</p></body></html>`, {
+      ? 'A conexão não foi autorizada. Você pode tentar novamente pelo MOVA$.'
+      : 'Não foi possível concluir a conexão. Volte ao MOVA$ e tente novamente.';
+  return new Response(`<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>MOVA$ · Mercado Pago</title><body style="font:16px system-ui;max-width:560px;margin:12vh auto;padding:24px;color:#162a37"><h1>MOVA$</h1><p>${message}</p></body></html>`, {
     status: result === 'connected' ? 200 : 400,
     headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' },
   });

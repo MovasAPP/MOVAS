@@ -143,7 +143,7 @@ export default function MyRequestsScreen() {
                       <Text style={styles.message}>{proposal.message}</Text>
                       <View style={styles.priceRow}>
                         <View><Text style={styles.priceLabel}>Valor do profissional</Text><Text style={styles.price}>{money(proposal.amount)}</Text></View>
-                        <View style={styles.totalBox}><Text style={styles.totalLabel}>Total com taxa CONTRATEI (10%)</Text><Text style={styles.total}>{money(proposal.customerTotal)}</Text></View>
+                        <View style={styles.totalBox}><Text style={styles.totalLabel}>Total com taxa MOVA$ (10%)</Text><Text style={styles.total}>{money(proposal.customerTotal)}</Text></View>
                       </View>
                       <Text style={styles.processingFeeNote}>A tarifa do Mercado Pago varia conforme o meio escolhido e será descontada do recebimento do profissional. O valor final aparece no detalhamento da venda no Mercado Pago.</Text>
                       {(job.status === 'open' && proposal.status === 'pending') || (job.status === 'awaiting_payment' && proposal.id === job.paymentProposalId && proposal.status === 'pending') ? (
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   totalLabel: { color: brand.orangeDark, fontSize: 8, fontWeight: '700' },
   total: { color: brand.orangeDark, fontSize: 14, fontWeight: '900', marginTop: 3 },
   processingFeeNote: { color: brand.muted, fontSize: 9, lineHeight: 14, marginTop: 8 },
-  payButton: { alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 9, marginTop: 12, paddingHorizontal: 13, paddingVertical: 10 },
+  payButton: { alignSelf: 'flex-start', backgroundColor: brand.orangeDark, borderRadius: 9, marginTop: 12, paddingHorizontal: 13, paddingVertical: 10 },
   payButtonText: { color: '#fff', fontSize: 10, fontWeight: '900' },
   jobActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 },
   secondaryAction: { alignSelf: 'flex-start', backgroundColor: '#F4F1ED', borderRadius: 9, paddingHorizontal: 11, paddingVertical: 8 },

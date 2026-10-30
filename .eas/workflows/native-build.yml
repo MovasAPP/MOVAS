@@ -1,4 +1,4 @@
-name: CONTRATEI · criar builds das lojas
+name: MOVA$ · criar builds das lojas
 
 on:
   workflow_dispatch:

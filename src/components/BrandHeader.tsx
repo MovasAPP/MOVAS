@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { brand } from '@/constants/brand';
@@ -7,18 +7,16 @@ type Props = { mode: 'hire' | 'work' };
 
 export function BrandHeader({ mode }: Props) {
   const router = useRouter();
+  const { width } = useWindowDimensions();
   const nextMode = mode === 'hire' ? 'work' : 'hire';
 
   return (
     <View style={styles.bar}>
       <Pressable accessibilityRole="link" onPress={() => router.push('/')} style={styles.brand}>
-        <View style={styles.mark}>
-          <Text style={styles.markLetter}>C</Text>
-          <View style={styles.check}><Text style={styles.checkText}>✓</Text></View>
-        </View>
+        <Image source={require('../../assets/images/movas-icon-foreground.png')} style={styles.mark} resizeMode="contain" />
         <View>
-          <Text style={styles.name}>{brand.name}</Text>
-          <Text style={styles.tagline}>serviços perto de você</Text>
+          <Text style={styles.name}>M<Text style={styles.nameGreen}>O</Text><Text style={styles.nameOrange}>V</Text>A<Text style={styles.nameGreen}>$</Text></Text>
+          {width >= 420 ? <Text style={styles.tagline}>Conectando quem precisa a quem faz</Text> : null}
         </View>
       </Pressable>
       <Pressable
@@ -40,37 +38,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 22,
-    paddingVertical: 13,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     width: '100%',
   },
-  brand: { alignItems: 'center', flexDirection: 'row', gap: 10 },
-  mark: {
-    alignItems: 'center',
-    backgroundColor: brand.orange,
-    borderRadius: 12,
-    height: 38,
-    justifyContent: 'center',
-    width: 38,
-    position: 'relative',
-  },
-  markLetter: { color: '#fff', fontSize: 21, fontWeight: '900' },
-  check: {
-    alignItems: 'center',
-    backgroundColor: brand.yellow,
-    borderColor: '#fff',
-    borderRadius: 9,
-    borderWidth: 2,
-    bottom: -4,
-    height: 17,
-    justifyContent: 'center',
-    position: 'absolute',
-    right: -4,
-    width: 17,
-  },
-  checkText: { color: brand.ink, fontSize: 9, fontWeight: '900', lineHeight: 11 },
-  name: { color: brand.ink, fontSize: 18, fontWeight: '900', letterSpacing: 0.5 },
-  tagline: { color: brand.muted, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+  brand: { alignItems: 'center', flexDirection: 'row', gap: 8 },
+  mark: { height: 42, width: 42 },
+  name: { color: brand.ink, fontSize: 18, fontWeight: '900', letterSpacing: 0.2 },
+  nameGreen: { color: brand.green },
+  nameOrange: { color: brand.orange },
+  tagline: { color: brand.muted, fontSize: 8, fontWeight: '700', letterSpacing: 0.15 },
   modeButton: {
     alignItems: 'center',
     backgroundColor: brand.orangeSoft,

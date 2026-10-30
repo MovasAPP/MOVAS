@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   details: { backgroundColor: '#F7F8F7', borderRadius: 9, color: brand.ink, fontSize: 11, lineHeight: 17, marginTop: 12, padding: 11 },
   label: { color: brand.ink, fontSize: 9, fontWeight: '800', marginTop: 12 },
   input: { backgroundColor: '#F7F8F7', borderColor: brand.border, borderRadius: 9, borderWidth: 1, color: brand.ink, fontSize: 11, marginTop: 6, minHeight: 90, padding: 9, textAlignVertical: 'top' },
-  resolveButton: { alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 8, marginTop: 10, paddingHorizontal: 11, paddingVertical: 9 },
+  resolveButton: { alignSelf: 'flex-start', backgroundColor: brand.orangeDark, borderRadius: 8, marginTop: 10, paddingHorizontal: 11, paddingVertical: 9 },
   resolveText: { color: '#fff', fontSize: 9, fontWeight: '900' },
   refresh: { alignSelf: 'flex-start', marginTop: 10, paddingVertical: 5 },
   refreshText: { color: brand.orangeDark, fontSize: 10, fontWeight: '800' },

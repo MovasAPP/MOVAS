@@ -57,7 +57,7 @@ export default function ReviewScreen() {
         <Text style={styles.title}>Revisão de identidade</Text>
         <Text style={styles.subtitle}>Acesse somente para conferir os documentos e registrar a análise.</Text>
 
-        {!user ? <View style={styles.info}><Text style={styles.infoTitle}>Entre com a conta de revisor</Text><Text style={styles.body}>O acesso é limitado aos usuários adicionados à equipe do CONTRATEI.</Text></View> : loading ? <Text style={styles.body}>Carregando fila…</Text> : error && !role ? <View style={styles.info}><Text style={styles.infoTitle}>Acesso restrito</Text><Text style={styles.body}>Esta conta não está cadastrada como revisora. Um administrador precisa adicionar seu usuário à equipe.</Text></View> : (
+        {!user ? <View style={styles.info}><Text style={styles.infoTitle}>Entre com a conta de revisor</Text><Text style={styles.body}>O acesso é limitado aos usuários adicionados à equipe do MOVA$.</Text></View> : loading ? <Text style={styles.body}>Carregando fila…</Text> : error && !role ? <View style={styles.info}><Text style={styles.infoTitle}>Acesso restrito</Text><Text style={styles.body}>Esta conta não está cadastrada como revisora. Um administrador precisa adicionar seu usuário à equipe.</Text></View> : (
           <>
             <View style={styles.queueHeader}>
               <View><Text style={styles.queueCount}>{entries.length}</Text><Text style={styles.queueLabel}>aguardando análise</Text></View>

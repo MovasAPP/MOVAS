@@ -58,11 +58,11 @@ export function ProposalModal({ job, onClose, onSubmit }: Props) {
           <TextInput keyboardType="decimal-pad" onChangeText={setAmount} style={styles.input} value={amount} />
           <View style={styles.priceBox}>
             <PriceLine label="Seu valor pelo serviço" value={money(numericAmount)} />
-            <PriceLine label="Taxa CONTRATEI paga pelo cliente (10%)" value={money(appFee)} />
+            <PriceLine label="Taxa MOVA$ paga pelo cliente (10%)" value={money(appFee)} />
             <View style={styles.totalLine}><Text style={styles.totalLabel}>Total para o cliente</Text><Text style={styles.totalValue}>{money(numericAmount + appFee)}</Text></View>
           </View>
           <View style={styles.feeNote}>
-            <Text style={styles.feeNoteText}>O cliente paga mais 10% de taxa CONTRATEI. A tarifa do Mercado Pago será descontada do que você recebe e varia conforme o meio de pagamento. O valor exato será informado no detalhamento da venda pelo Mercado Pago; o CONTRATEI não consegue calculá-lo antes do pagamento. Pagamentos ainda não estão ativos.</Text>
+            <Text style={styles.feeNoteText}>O cliente paga mais 10% de taxa MOVA$. A tarifa do Mercado Pago será descontada do que você recebe e varia conforme o meio de pagamento. O valor exato será informado no detalhamento da venda pelo Mercado Pago; o MOVA$ não consegue calculá-lo antes do pagamento. Pagamentos ainda não estão ativos.</Text>
           </View>
           <Text style={styles.label}>Mensagem ao contratante</Text>
           <TextInput
@@ -109,6 +109,6 @@ const styles = StyleSheet.create({
   feeNote: { backgroundColor: '#FFF7E9', borderRadius: 10, marginTop: 11, padding: 10 },
   feeNoteText: { color: '#765C37', fontSize: 10, lineHeight: 15 },
   error: { color: '#B42318', fontSize: 12, fontWeight: '700', marginTop: 8 },
-  submit: { alignItems: 'center', backgroundColor: brand.orange, borderRadius: 12, marginTop: 16, padding: 14 },
+  submit: { alignItems: 'center', backgroundColor: brand.orangeDark, borderRadius: 12, marginTop: 16, padding: 14 },
   submitText: { color: '#fff', fontSize: 13, fontWeight: '800' },
 });

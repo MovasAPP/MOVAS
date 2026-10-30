@@ -33,7 +33,7 @@ export default function AuthCallbackScreen() {
         if (!data.session) throw new Error('Não foi possível confirmar este link. Confira se ele expirou ou já foi usado.');
         if (active) {
           setConfirmed(true);
-          setMessage('E-mail confirmado. Sua conta CONTRATEI está pronta para usar.');
+          setMessage('E-mail confirmado. Sua conta MOVA$ está pronta para usar.');
         }
       } catch (caught) {
         if (active) setMessage(caught instanceof Error ? caught.message : 'Não foi possível confirmar seu e-mail. Solicite um novo link.');
@@ -48,7 +48,7 @@ export default function AuthCallbackScreen() {
       <BrandHeader mode="hire" />
       <Page>
         <View style={styles.card}>
-          <Text style={styles.eyebrow}>CONTA CONTRATEI</Text>
+          <Text style={styles.eyebrow}>CONTA MOVA$</Text>
           <Text style={styles.title}>{confirmed ? 'Tudo certo!' : 'Confirmação de e-mail'}</Text>
           <Text accessibilityRole={confirmed ? 'status' : 'alert'} style={[styles.body, !confirmed && styles.pending]}>{message}</Text>
           <Pressable onPress={() => router.replace(confirmed ? '/profile' : '/')} style={styles.button}><Text style={styles.buttonText}>{confirmed ? 'Continuar' : 'Voltar ao início'}</Text></Pressable>
@@ -65,6 +65,6 @@ const styles = StyleSheet.create({
   title: { color: brand.ink, fontSize: 28, fontWeight: '900', letterSpacing: -0.8, marginTop: 8 },
   body: { color: brand.success, fontSize: 12, lineHeight: 18, marginTop: 9 },
   pending: { color: brand.muted },
-  button: { alignItems: 'center', alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 11, marginTop: 18, paddingHorizontal: 16, paddingVertical: 12 },
+  button: { alignItems: 'center', alignSelf: 'flex-start', backgroundColor: brand.orangeDark, borderRadius: 11, marginTop: 18, paddingHorizontal: 16, paddingVertical: 12 },
   buttonText: { color: '#fff', fontSize: 12, fontWeight: '900' },
 });

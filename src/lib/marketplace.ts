@@ -128,7 +128,7 @@ export async function getVerifiedWorkerServices(): Promise<VerifiedServiceCard[]
       color: categoryMeta?.color ?? '#E8C6A7',
       priceLabel: startingPrice === null
         ? priceUnitLabel[service.price_unit] ?? 'Orçamento personalizado'
-        : `A partir de ${(startingPrice * 1.1).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} com taxa CONTRATEI incluída`,
+        : `A partir de ${(startingPrice * 1.1).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} com taxa MOVA$ incluída`,
     }];
   });
 }
@@ -372,7 +372,7 @@ export async function getSupportDisputes(userId: string): Promise<SupportDispute
     return {
       id: item.id, jobId: item.job_id, reason: item.reason, details: item.details,
       status: item.status, resolution: item.resolution,
-      openedByName: profileById.get(item.opened_by) ?? 'Usuário CONTRATEI',
+      openedByName: profileById.get(item.opened_by) ?? 'Usuário MOVA$',
       clientName: profileById.get(job?.client_id ?? '') ?? 'Contratante',
       workerName: profileById.get(job?.assigned_worker_id ?? '') ?? 'Profissional',
       jobTitle: job?.description.split(/[.!?\n]/)[0].slice(0, 100) ?? 'Serviço contratado',

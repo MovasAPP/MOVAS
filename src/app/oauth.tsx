@@ -17,7 +17,7 @@ export default function OAuthReturnScreen() {
       <View style={styles.card}>
         <Text style={styles.eyebrow}>MERCADO PAGO</Text>
         <Text style={styles.title}>{connected ? 'Conta conectada' : cancelled ? 'Conexão cancelada' : 'Não foi possível conectar'}</Text>
-        <Text style={styles.copy}>{connected ? 'A conta foi autorizada com segurança. Os pagamentos pelo CONTRATEI ainda estão em configuração.' : cancelled ? 'Você pode conectar sua conta depois, pelo perfil profissional.' : 'Volte ao perfil e tente novamente. Se o erro continuar, a integração ainda pode estar em configuração.'}</Text>
+        <Text style={styles.copy}>{connected ? 'A conta foi autorizada com segurança. Os pagamentos pelo MOVA$ ainda estão em configuração.' : cancelled ? 'Você pode conectar sua conta depois, pelo perfil profissional.' : 'Volte ao perfil e tente novamente. Se o erro continuar, a integração ainda pode estar em configuração.'}</Text>
         <Pressable onPress={() => router.replace('/profile')} style={styles.button}><Text style={styles.buttonText}>Voltar ao perfil</Text></Pressable>
       </View>
     </Page>
@@ -30,6 +30,6 @@ const styles = StyleSheet.create({
   eyebrow: { color: brand.orangeDark, fontSize: 10, fontWeight: '900', letterSpacing: 1 },
   title: { color: brand.ink, fontSize: 26, fontWeight: '900', marginTop: 9 },
   copy: { color: brand.muted, fontSize: 13, lineHeight: 20, marginTop: 8 },
-  button: { alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 10, marginTop: 17, paddingHorizontal: 14, paddingVertical: 11 },
+  button: { alignSelf: 'flex-start', backgroundColor: brand.orangeDark, borderRadius: 10, marginTop: 17, paddingHorizontal: 14, paddingVertical: 11 },
   buttonText: { color: '#fff', fontSize: 11, fontWeight: '800' },
 });

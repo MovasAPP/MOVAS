@@ -51,7 +51,7 @@ export default function SafetyScreen() {
         <Text style={styles.lead}>Profissionais enviam a frente e o verso do documento com foto para análise manual. Os arquivos são privados e não aparecem no perfil público.</Text>
         <View style={styles.card}>
           <VerificationRow icon="✉" title="E-mail da conta" text="A conta usa confirmação por e-mail do Supabase Auth." status={user?.email_confirmed_at ? 'CONFIRMADO' : user ? 'PENDENTE' : '—'} />
-          <VerificationRow icon="▣" title="Documento com foto" text="Envie frente e verso para a equipe CONTRATEI analisar. Não usamos um serviço automático de validação." status={status.toUpperCase()} />
+          <VerificationRow icon="▣" title="Documento com foto" text="Envie frente e verso para a equipe MOVA$ analisar. Não usamos um serviço automático de validação." status={status.toUpperCase()} />
           <VerificationRow icon="☆" title="Qualificação profissional" text="Certificados e habilitações específicos ainda não são validados pelo aplicativo." status="NÃO VALIDADO" />
         </View>
         <SectionTitle title="Como protegemos seus dados" subtitle="O que está implementado na versão atual." />
@@ -64,7 +64,7 @@ export default function SafetyScreen() {
         <Pressable onPress={() => router.push('/profile')} style={styles.button}>
           <Text style={styles.buttonText}>Ver meu perfil e documentos</Text>
         </Pressable>
-        <Text style={styles.disclaimer}>Envie somente imagens do próprio documento e evite incluir dados pessoais nas fotos dos serviços. Antes da abertura pública, as regras de retenção, exclusão e suporte precisam estar descritas na política de privacidade do CONTRATEI.</Text>
+        <Text style={styles.disclaimer}>Envie somente imagens do próprio documento e evite incluir dados pessoais nas fotos dos serviços. Antes da abertura pública, as regras de retenção, exclusão e suporte precisam estar descritas na política de privacidade do MOVA$.</Text>
       </Page>
     </View>
   );
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   protectionIcon: { fontSize: 18 },
   protectionTitle: { color: brand.ink, fontSize: 12, fontWeight: '800', marginTop: 9 },
   protectionText: { color: brand.muted, fontSize: 10, lineHeight: 15, marginTop: 5 },
-  button: { alignItems: 'center', alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 11, marginTop: 18, paddingHorizontal: 16, paddingVertical: 12 },
+  button: { alignItems: 'center', alignSelf: 'flex-start', backgroundColor: brand.orangeDark, borderRadius: 11, marginTop: 18, paddingHorizontal: 16, paddingVertical: 12 },
   buttonText: { color: '#fff', fontSize: 12, fontWeight: '800' },
   disclaimer: { color: brand.muted, fontSize: 9, lineHeight: 14, marginBottom: 20, marginTop: 9, maxWidth: 700 },
 });

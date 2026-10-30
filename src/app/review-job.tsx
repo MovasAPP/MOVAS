@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   star: { color: '#D5DAD7', fontSize: 32 },
   selectedStar: { color: '#E9A338' },
   input: { backgroundColor: '#F7F8F7', borderColor: brand.border, borderRadius: 9, borderWidth: 1, color: brand.ink, fontSize: 12, marginTop: 7, minHeight: 110, padding: 10, textAlignVertical: 'top' },
-  submit: { alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 9, marginTop: 13, paddingHorizontal: 13, paddingVertical: 10 },
+  submit: { alignSelf: 'flex-start', backgroundColor: brand.orangeDark, borderRadius: 9, marginTop: 13, paddingHorizontal: 13, paddingVertical: 10 },
   submitText: { color: '#fff', fontSize: 10, fontWeight: '900' },
   success: { color: '#246044', fontSize: 12, lineHeight: 19 },
 });

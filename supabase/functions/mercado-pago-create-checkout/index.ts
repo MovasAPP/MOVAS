@@ -47,7 +47,7 @@ Deno.serve(async (request) => {
       body: JSON.stringify({
         items: [{
           id: payment.proposal_id,
-          title: 'Serviço contratado pelo CONTRATEI',
+          title: 'Serviço contratado pelo MOVA$',
           quantity: 1,
           currency_id: 'BRL',
           unit_price: Number(payment.customer_total),

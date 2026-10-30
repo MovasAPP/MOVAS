@@ -1,4 +1,4 @@
-# Atualizar o banco CONTRATEI
+# Atualizar o banco MOVA$
 
 Execute estes arquivos **um por vez e nesta ordem** no SQL Editor do projeto Supabase `mzcbpilcbmpvfzgknqdg`. Não use o projeto do CRM Steinmetz. As migrations 001–005 já foram executadas.
 

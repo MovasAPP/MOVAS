@@ -11,8 +11,8 @@ export default function RootHtml({ children }: PropsWithChildren) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="Encontre profissionais verificados para serviços na sua região. Publique seu pedido, receba propostas e escolha com confiança." />
-        <meta name="theme-color" content="#C84F27" />
-        <title>CONTRATEI | Serviços perto de você</title>
+        <meta name="theme-color" content="#F26A3A" />
+        <title>MOVA$ | Serviços perto de você</title>
         <ScrollViewStyleReset />
         {headNodes}
       </head>

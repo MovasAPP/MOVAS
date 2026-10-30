@@ -94,7 +94,7 @@ export default function MyProposalsScreen() {
           <View style={styles.emptyCard}><Text style={styles.cardTitle}>Você ainda não enviou propostas</Text><Text style={styles.body}>Encontre pedidos abertos e envie uma proposta para começar.</Text><Pressable onPress={() => router.push('/work')} style={styles.actionButton}><Text style={styles.actionButtonText}>Ver oportunidades</Text></Pressable></View>
         ) : (
           <>
-            <SectionTitle title={`${proposals.length} ${proposals.length === 1 ? 'proposta enviada' : 'propostas enviadas'}`} subtitle="O cliente paga a taxa CONTRATEI de 10%; a tarifa do Mercado Pago é descontada do seu recebimento." />
+            <SectionTitle title={`${proposals.length} ${proposals.length === 1 ? 'proposta enviada' : 'propostas enviadas'}`} subtitle="O cliente paga a taxa MOVA$ de 10%; a tarifa do Mercado Pago é descontada do seu recebimento." />
             <View style={styles.list}>
               {proposals.map((proposal) => (
                 <View key={proposal.id} style={styles.card}>
@@ -121,7 +121,7 @@ export default function MyProposalsScreen() {
             </View>
           </>
         )}
-        <Text style={styles.disclaimer}>*Total inclui 10% de taxa CONTRATEI, paga pelo cliente. A tarifa de processamento varia conforme o meio de pagamento e será descontada do recebimento do profissional. Consulte o valor final no detalhamento da venda do Mercado Pago.</Text>
+        <Text style={styles.disclaimer}>*Total inclui 10% de taxa MOVA$, paga pelo cliente. A tarifa de processamento varia conforme o meio de pagamento e será descontada do recebimento do profissional. Consulte o valor final no detalhamento da venda do Mercado Pago.</Text>
       </Page>
       <AuthModal visible={authOpen} onClose={() => setAuthOpen(false)} />
     </View>
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   cardTitle: { color: brand.ink, fontSize: 14, fontWeight: '900', marginTop: 5 },
   body: { color: brand.muted, fontSize: 10, lineHeight: 16, marginTop: 6 },
   action: { color: brand.orangeDark, fontSize: 11, fontWeight: '900', marginTop: 14 },
-  actionButton: { alignSelf: 'flex-start', backgroundColor: brand.orange, borderRadius: 9, marginTop: 14, paddingHorizontal: 12, paddingVertical: 9 },
+  actionButton: { alignSelf: 'flex-start', backgroundColor: brand.orangeDark, borderRadius: 9, marginTop: 14, paddingHorizontal: 12, paddingVertical: 9 },
   actionButtonText: { color: '#fff', fontSize: 10, fontWeight: '900' },
   list: { gap: 12 },
   card: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 15, borderWidth: 1, maxWidth: 820, padding: 14 },
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   jobActions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
   secondaryButton: { backgroundColor: '#F4F1ED', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 },
   secondaryButtonText: { color: brand.orangeDark, fontSize: 9, fontWeight: '900' },
-  completeButton: { backgroundColor: brand.orange, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 },
+  completeButton: { backgroundColor: brand.orangeDark, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 },
   completeButtonText: { color: '#fff', fontSize: 9, fontWeight: '900' },
   pendingCompletion: { alignSelf: 'center', color: brand.muted, fontSize: 9 },
   disclaimer: { color: brand.muted, fontSize: 9, lineHeight: 14, marginBottom: 15, marginTop: 18, maxWidth: 700 },

@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   unread: { backgroundColor: '#FFFCF6', borderColor: '#E8C49A' },
   heading: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   cardTitle: { color: brand.ink, fontSize: 12, fontWeight: '900' },
-  dot: { backgroundColor: brand.orange, borderRadius: 5, height: 9, width: 9 },
+  dot: { backgroundColor: brand.orangeDark, borderRadius: 5, height: 9, width: 9 },
   summary: { color: brand.muted, fontSize: 10, lineHeight: 15, marginTop: 5 },
   date: { color: brand.muted, fontSize: 8, marginTop: 8 },
 });

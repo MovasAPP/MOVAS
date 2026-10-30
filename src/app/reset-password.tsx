@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   body: { color: brand.muted, fontSize: 12, lineHeight: 18, marginTop: 7 },
   label: { color: brand.ink, fontSize: 11, fontWeight: '800', marginTop: 14 },
   input: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 11, borderWidth: 1, color: brand.ink, fontSize: 14, minHeight: 46, marginTop: 6, paddingHorizontal: 12 },
-  button: { alignItems: 'center', backgroundColor: brand.orange, borderRadius: 11, marginTop: 18, padding: 13 },
+  button: { alignItems: 'center', backgroundColor: brand.orangeDark, borderRadius: 11, marginTop: 18, padding: 13 },
   buttonText: { color: '#fff', fontSize: 12, fontWeight: '900' },
   disabled: { opacity: 0.6 },
   notice: { color: brand.success, fontSize: 12, fontWeight: '700', lineHeight: 18, marginTop: 14 },

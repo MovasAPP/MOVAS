@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "CONTRATEI",
+    "name": "MOVA$",
     "slug": "contratei",
     "version": "1.0.0",
     "runtimeVersion": {
@@ -10,13 +10,16 @@
       "checkAutomatically": "ON_LOAD"
     },
     "ios": {
-      "bundleIdentifier": "com.murilobueno.contratei"
+      "bundleIdentifier": "com.murilobueno.movas",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
-      "package": "com.murilobueno.contratei",
+      "package": "com.murilobueno.movas",
       "adaptiveIcon": {
-        "backgroundColor": "#C84F27",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundColor": "#F7F6F2",
+        "foregroundImage": "./assets/images/movas-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -26,9 +29,11 @@
     "icon": "./assets/images/icon.png",
     "scheme": "contratei",
     "userInterfaceStyle": "light",
+    "backgroundColor": "#F7F6F2",
+    "primaryColor": "#F26A3A",
     "web": {
       "output": "static",
-      "name": "CONTRATEI",
+      "name": "MOVA$",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -36,9 +41,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#C84F27",
+          "backgroundColor": "#F7F6F2",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 112
         }
       ]
     ],

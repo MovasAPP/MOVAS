@@ -212,11 +212,11 @@ const styles = StyleSheet.create({
   requirementTitle: { color: brand.ink, fontSize: 13, fontWeight: '800' },
   checkRow: { alignItems: 'center', flexDirection: 'row', gap: 9, paddingVertical: 8 },
   checkbox: { alignItems: 'center', backgroundColor: '#fff', borderColor: '#BAC5BF', borderRadius: 5, borderWidth: 1, height: 18, justifyContent: 'center', width: 18 },
-  checkboxActive: { backgroundColor: brand.orange, borderColor: brand.orange },
+  checkboxActive: { backgroundColor: brand.orangeDark, borderColor: brand.orange },
   tick: { color: '#fff', fontSize: 12, fontWeight: '900' },
   checkLabel: { color: brand.ink, flex: 1, fontSize: 11, fontWeight: '600' },
   error: { color: '#B42318', fontSize: 12, fontWeight: '700', marginVertical: 8 },
-  submit: { alignItems: 'center', backgroundColor: brand.orange, borderRadius: 12, marginTop: 16, padding: 14 },
+  submit: { alignItems: 'center', backgroundColor: brand.orangeDark, borderRadius: 12, marginTop: 16, padding: 14 },
   submitText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   footerNote: { color: brand.muted, fontSize: 10, lineHeight: 15, marginBottom: 6, marginTop: 10, textAlign: 'center' },
 });
