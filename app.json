@@ -7,7 +7,8 @@
       "policy": "appVersion"
     },
     "updates": {
-      "checkAutomatically": "ON_LOAD"
+      "checkAutomatically": "ON_LOAD",
+      "url": "https://u.expo.dev/b600ab77-9034-4bcb-b3a8-ac4863491a77"
     },
     "ios": {
       "bundleIdentifier": "com.murilobueno.movas",
@@ -64,3 +65,4 @@
     "owner": "movasapp"
   }
 }
+
