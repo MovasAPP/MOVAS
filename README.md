@@ -54,9 +54,9 @@ A URL e a chave publicável fornecidas foram configuradas somente no `.env.local
 
 ## Atualizações do site e dos aplicativos
 
-O site público está em https://movas.expo.app e é exportado como páginas estáticas do Expo Router (`npx expo export --platform web`). O fluxo em `.eas/workflows/production.yml` está preparado para validar o código e, depois de vincular o GitHub ao projeto EAS, publicar a versão web e uma atualização OTA no canal `production` após envios à branch `main`. Mudanças que alteram código nativo ainda exigem uma nova build Android/iOS e aprovação nas lojas; `runtimeVersion` usa a versão do app para evitar aplicar atualização a uma versão incompatível.
+O site público está em https://movas.expo.app e é exportado como páginas estáticas do Expo Router (`npx expo export --platform web`). O fluxo em `.eas/workflows/production.yml` está preparado para validar o código e, após conectar o GitHub ao projeto EAS, publicar a versão web e uma atualização OTA no canal `production` após envios à branch `main`. Mudanças que alteram código nativo ainda exigem uma nova build Android/iOS e aprovação nas lojas; `runtimeVersion` usa a versão do app para evitar aplicar atualização a uma versão incompatível.
 
-O projeto EAS está associado à conta Expo `movasapp`; `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` já estão configurados nos ambientes `preview` e `production`. O repositório GitHub `MovasAPP/MOVAS` ainda precisa ser conectado nas configurações do projeto EAS para habilitar os gatilhos `push`.
+O projeto EAS está associado à conta Expo `movasapp`; `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` já estão configurados nos ambientes `preview` e `production`. O repositório GitHub `MovasAPP/MOVAS` está conectado ao projeto EAS. O workflow `.eas/workflows/production.yml` foi validado e executado com sucesso: cada envio à branch `main` pode validar o código, publicar atualização OTA e atualizar o site.
 
 O workflow `.eas/workflows/native-build.yml` cria builds de produção sob demanda. A publicação nas lojas exige contas e credenciais de desenvolvedor do Murilo; o workflow não envia builds automaticamente para as lojas. Um domínio próprio pode ser associado depois de adquirir o domínio e ativar um plano EAS com suporte a domínio personalizado. Até lá, o EAS fornece um endereço `*.expo.app`.
 
@@ -76,3 +76,4 @@ O projeto de backend do marketplace é separado do CRM da Steinmetz e está conf
 npx tsc --noEmit
 npx expo export --platform web
 ```
+
