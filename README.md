@@ -2,7 +2,7 @@
 
 Aplicativo independente de contratação de serviços, criado para Android, iOS e web com Expo e React Native. O projeto pertence ao produto MOVA$, de Murilo Bueno, e não está conectado ao CRM da Steinmetz.
 
-**Identidade da marca:** MOVA$ (também escrito MOVAS quando um identificador técnico não aceita `$`). O nome visível, as cores, o ícone, o site e os textos do app usam MOVA$. O slug do projeto EAS e o esquema de retorno OAuth ainda usam `contratei` para manter compatibilidade com o projeto EAS e a lista de redirecionamentos já preparada no Supabase; só devem mudar junto com a configuração desses serviços.
+**Identidade da marca:** MOVA$ (também escrito MOVAS quando um identificador técnico não aceita `$`). O nome visível, as cores, o ícone, o site e os textos do app usam MOVA$. O slug do EAS é `movas`. O esquema de retorno OAuth permanece `contratei` para manter compatibilidade com a lista de redirecionamentos já preparada no Supabase.
 
 ## Rodar localmente
 
@@ -56,7 +56,7 @@ A URL e a chave publicável fornecidas foram configuradas somente no `.env.local
 
 O site é exportado como páginas estáticas do Expo Router (`npx expo export --platform web`). Depois de associar uma conta e projeto EAS e ligar o GitHub, o fluxo em `.eas/workflows/production.yml` valida o código e, após cada envio à branch `main`, publica a versão web no EAS Hosting e uma atualização OTA no canal `production`. Mudanças que alteram código nativo ainda exigem uma nova build Android/iOS e aprovação nas lojas; `runtimeVersion` usa a versão do app para evitar aplicar atualização a uma versão incompatível.
 
-Antes de ativar o fluxo, crie ou acesse uma conta Expo com o e-mail do Murilo, execute `npx eas-cli@latest login` e `npx eas-cli@latest update:configure` no projeto MOVA$. Isso cria/associa o projeto EAS e grava o `projectId` e a URL reais no `app.json`; não invente nem reutilize o ID do CRM. Configure `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` nos ambientes `preview` e `production` do EAS. Conecte o repositório GitHub `MovasAPP/MOVAS` às configurações do projeto EAS para habilitar os gatilhos `push`.
+O projeto EAS está associado à conta Expo `movasapp`. Configure `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` nos ambientes `preview` e `production` do EAS. Conecte o repositório GitHub `MovasAPP/MOVAS` às configurações do projeto EAS para habilitar os gatilhos `push`.
 
 O workflow `.eas/workflows/native-build.yml` cria builds de produção sob demanda. A publicação nas lojas exige contas e credenciais de desenvolvedor do Murilo; o workflow não envia builds automaticamente para as lojas. Um domínio próprio pode ser associado depois de adquirir o domínio e ativar um plano EAS com suporte a domínio personalizado. Até lá, o EAS fornece um endereço `*.expo.app`.
 

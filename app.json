@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "MOVA$",
-    "slug": "contratei",
+    "slug": "movas",
     "version": "1.0.0",
     "runtimeVersion": {
       "policy": "appVersion"
@@ -58,9 +58,9 @@
         }
       },
       "eas": {
-        "projectId": "4707f645-b53b-43cf-b9ac-466dc225a789"
+        "projectId": "b600ab77-9034-4bcb-b3a8-ac4863491a77"
       }
     },
-    "owner": "contratei.app"
+    "owner": "movasapp"
   }
 }
