@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View, type ScrollViewInstance } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, type Href } from 'expo-router';
 
 import { AuthModal } from '@/components/AuthModal';
 import { brand, categories } from '@/constants/brand';
@@ -12,6 +12,7 @@ export function MarketingLanding() {
   const [howOffset, setHowOffset] = useState(0);
   const [authOpen, setAuthOpen] = useState(false);
   const wide = width >= 820;
+  const exploreHref = '/explore' as Href;
 
   return (
     <View style={styles.screen}>
@@ -45,7 +46,7 @@ export function MarketingLanding() {
               <Text style={[styles.heroTitle, !wide && styles.heroTitleCompact]}>O trabalho que você precisa. A pessoa certa para fazer.</Text>
               <Text style={styles.heroText}>No MOVA$, você publica o que precisa com uma descrição ou fotos, recebe propostas e encontra profissionais da sua região.</Text>
               <View style={styles.heroActions}>
-                <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: '/', params: { view: 'explore' } })} style={styles.primaryButton}>
+                <Pressable accessibilityRole="button" onPress={() => router.push(exploreHref)} style={styles.primaryButton}>
                   <Text style={styles.primaryButtonText}>Quero contratar <Text style={styles.buttonArrow}>→</Text></Text>
                 </Pressable>
                 <Pressable accessibilityRole="button" onPress={() => router.push('/work')} style={styles.secondaryButton}>
@@ -91,7 +92,7 @@ export function MarketingLanding() {
               <Text style={styles.audienceKicker}>PARA CONTRATANTES</Text>
               <Text style={styles.audienceTitle}>Resolva o que está na sua lista.</Text>
               <Text style={styles.audienceText}>Publique seu pedido com fotos ou só uma descrição. Receba propostas e veja os detalhes para escolher com mais informação.</Text>
-              <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: '/', params: { view: 'explore' } })} style={styles.textAction}><Text style={styles.textActionText}>Encontrar profissionais <Text style={styles.buttonArrow}>→</Text></Text></Pressable>
+              <Pressable accessibilityRole="button" onPress={() => router.push(exploreHref)} style={styles.textAction}><Text style={styles.textActionText}>Encontrar profissionais <Text style={styles.buttonArrow}>→</Text></Text></Pressable>
             </View>
             <View style={[styles.audienceCard, styles.workerCard]}>
               <View style={[styles.audienceIcon, styles.workerIcon]}><Text style={styles.audienceEmoji}>↗</Text></View>
@@ -112,7 +113,7 @@ export function MarketingLanding() {
               <Step number="2" title="Receba propostas" text="Profissionais podem responder com preço, experiência e condições." />
               <Step number="3" title="Compare e combine" text="Veja as informações disponíveis e decida como seguir." />
             </View>
-            <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: '/', params: { view: 'explore' } })} style={styles.howButton}><Text style={styles.howButtonText}>Começar agora <Text style={styles.buttonArrow}>→</Text></Text></Pressable>
+            <Pressable accessibilityRole="button" onPress={() => router.push(exploreHref)} style={styles.howButton}><Text style={styles.howButtonText}>Começar agora <Text style={styles.buttonArrow}>→</Text></Text></Pressable>
           </View>
         </View>
 
@@ -123,7 +124,7 @@ export function MarketingLanding() {
             <Text style={styles.sectionIntro}>Encontre pedidos e serviços em diferentes categorias.</Text>
             <View style={styles.categoryGrid}>
               {categories.map((item) => (
-                <Pressable key={item.name} onPress={() => router.push({ pathname: '/', params: { view: 'explore' } })} style={styles.categoryChip}>
+                <Pressable key={item.name} onPress={() => router.push(exploreHref)} style={styles.categoryChip}>
                   <Text style={styles.categoryIcon}>{item.icon}</Text><Text style={styles.categoryName}>{item.name}</Text><Text style={styles.categoryArrow}>↗</Text>
                 </Pressable>
               ))}
@@ -147,7 +148,7 @@ export function MarketingLanding() {
           <View style={[styles.finalCard, wide && styles.finalCardWide]}>
             <View style={{ flex: 1 }}><Text style={styles.finalEyebrow}>MOVA$ · RIO GRANDE DO SUL</Text><Text style={styles.finalTitle}>Vamos tirar seu próximo trabalho do papel?</Text></View>
             <View style={styles.finalActions}>
-              <Pressable onPress={() => router.push({ pathname: '/', params: { view: 'explore' } })} style={styles.finalPrimary}><Text style={styles.finalPrimaryText}>Encontrar um serviço →</Text></Pressable>
+              <Pressable onPress={() => router.push(exploreHref)} style={styles.finalPrimary}><Text style={styles.finalPrimaryText}>Encontrar um serviço →</Text></Pressable>
               <Pressable onPress={() => router.push('/work')} style={styles.finalSecondary}><Text style={styles.finalSecondaryText}>Oferecer meu trabalho</Text></Pressable>
             </View>
           </View>

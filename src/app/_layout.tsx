@@ -16,6 +16,7 @@ export default function RootLayout() {
         tabBarLabelStyle: { fontSize: 10, fontWeight: '700' },
       }}>
       <Tabs.Screen name="index" options={{ title: 'Início', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 19 }}>⌂</Text> }} />
+      <Tabs.Screen name="explore" options={{ href: null }} />
       <Tabs.Screen name="work" options={{ title: 'Trabalhos', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 18 }}>↗</Text> }} />
       <Tabs.Screen name="safety" options={{ title: 'Segurança', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 17 }}>◇</Text> }} />
       <Tabs.Screen name="profile" options={{ title: 'Perfil', tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 17 }}>◉</Text> }} />
