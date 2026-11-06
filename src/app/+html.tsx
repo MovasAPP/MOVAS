@@ -10,9 +10,9 @@ export default function RootHtml({ children }: PropsWithChildren) {
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="Encontre profissionais verificados para serviços na sua região. Publique seu pedido, receba propostas e escolha com confiança." />
-        <meta name="theme-color" content="#F26A3A" />
-        <title>MOVA$ | Serviços perto de você</title>
+        <meta name="description" content="Precisa de um serviço? Descreva o que precisa e receba propostas de profissionais da sua região." />
+        <meta name="theme-color" content="#191B19" />
+        <title>MOVA$ | Conectando quem precisa a quem faz</title>
         <ScrollViewStyleReset />
         {headNodes}
       </head>
@@ -23,3 +23,4 @@ export default function RootHtml({ children }: PropsWithChildren) {
     </html>
   );
 }
+
