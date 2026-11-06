@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { brand } from '@/constants/brand';
@@ -22,7 +22,8 @@ export function Page({ children, scroll = true }: Props) {
 
 const styles = StyleSheet.create({
   safe: { backgroundColor: brand.background, flex: 1 },
-  scrollContent: { alignItems: 'center', paddingBottom: 30 },
-  content: { maxWidth: 1120, paddingHorizontal: 22, width: '100%' },
+  scrollContent: { alignItems: 'center', paddingBottom: Platform.OS === 'web' ? 56 : 30 },
+  content: { maxWidth: Platform.OS === 'web' ? 1260 : 1120, paddingHorizontal: Platform.OS === 'web' ? 42 : 22, width: '100%' },
   fill: { flex: 1 },
 });
+

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { BrandHeader } from '@/components/BrandHeader';
@@ -105,9 +105,9 @@ const styles = StyleSheet.create({
   myProposalsButton: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 10, borderWidth: 1, marginBottom: 5, paddingHorizontal: 11, paddingVertical: 9 },
   myProposalsButtonText: { color: brand.orangeDark, fontSize: 10, fontWeight: '900' },
   eyebrow: { color: brand.orangeDark, fontSize: 10, fontWeight: '900', letterSpacing: 1.2 },
-  title: { color: brand.ink, fontSize: 36, fontWeight: '900', letterSpacing: -1.5, marginTop: 8 },
+  title: { color: brand.ink, fontFamily: Platform.OS === 'web' ? 'Georgia' : undefined, fontSize: 36, fontWeight: Platform.OS === 'web' ? '400' : '900', letterSpacing: -1.5, marginTop: 8 },
   subtitle: { color: brand.muted, fontSize: 13, marginTop: 5 },
-  verificationBanner: { alignItems: 'center', backgroundColor: '#FFF2E8', borderColor: '#F2DCCF', borderRadius: 14, borderWidth: 1, flexDirection: 'row', gap: 11, marginTop: 20, padding: 13 },
+  verificationBanner: { alignItems: 'center', backgroundColor: '#E9E5DA', borderColor: brand.border, borderRadius: Platform.OS === 'web' ? 2 : 14, borderWidth: 1, flexDirection: 'row', gap: 11, marginTop: 20, padding: 13 },
   verificationIcon: { alignItems: 'center', backgroundColor: '#fff', borderRadius: 19, height: 37, justifyContent: 'center', width: 37 },
   verificationCopy: { flex: 1 },
   verificationTitle: { color: brand.ink, fontSize: 11, fontWeight: '800' },
@@ -118,10 +118,10 @@ const styles = StyleSheet.create({
   noticeText: { color: brand.success, flex: 1, fontSize: 10, fontWeight: '700', lineHeight: 15 },
   dismiss: { color: brand.success, fontSize: 18 },
   filters: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, marginTop: 20 },
-  search: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 11, borderWidth: 1, color: brand.ink, flex: 1, fontSize: 12, minHeight: 44, minWidth: 190, paddingHorizontal: 12 },
-  city: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 11, borderWidth: 1, color: brand.ink, fontSize: 12, minHeight: 44, paddingHorizontal: 12, width: 195 },
+  search: { backgroundColor: '#FAF8F2', borderColor: brand.border, borderRadius: Platform.OS === 'web' ? 2 : 11, borderWidth: 1, color: brand.ink, flex: 1, fontSize: 12, minHeight: 44, minWidth: 190, paddingHorizontal: 12 },
+  city: { backgroundColor: '#FAF8F2', borderColor: brand.border, borderRadius: Platform.OS === 'web' ? 2 : 11, borderWidth: 1, color: brand.ink, fontSize: 12, minHeight: 44, paddingHorizontal: 12, width: 195 },
   categories: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 13 },
-  filterChip: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 99, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 8 },
+  filterChip: { backgroundColor: '#FAF8F2', borderColor: brand.border, borderRadius: Platform.OS === 'web' ? 2 : 99, borderWidth: 1, paddingHorizontal: 11, paddingVertical: 8 },
   filterChipActive: { backgroundColor: brand.orangeDark, borderColor: brand.orange },
   filterText: { color: '#52625D', fontSize: 10, fontWeight: '700' },
   filterTextActive: { color: '#fff' },
@@ -129,3 +129,4 @@ const styles = StyleSheet.create({
   empty: { color: brand.muted, fontSize: 13, paddingVertical: 15 },
   disclaimer: { color: brand.muted, fontSize: 9, marginBottom: 16, marginTop: 16, textAlign: 'center' },
 });
+

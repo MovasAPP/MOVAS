@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { brand } from '@/constants/brand';
@@ -23,7 +23,7 @@ export function BrandHeader({ mode }: Props) {
         accessibilityRole="button"
         onPress={() => router.push(nextMode === 'work' ? '/work' : '/')}
         style={styles.modeButton}>
-        <Text style={styles.modeIcon}>{mode === 'hire' ? '↗' : '⌂'}</Text>
+        {Platform.OS === 'web' ? null : <Text style={styles.modeIcon}>{mode === 'hire' ? '↗' : '⌂'}</Text>}
         <Text style={styles.modeText}>{mode === 'hire' ? 'Quero trabalhar' : 'Quero contratar'}</Text>
       </Pressable>
     </View>
@@ -51,7 +51,9 @@ const styles = StyleSheet.create({
   modeButton: {
     alignItems: 'center',
     backgroundColor: brand.orangeSoft,
-    borderRadius: 999,
+    borderRadius: Platform.OS === 'web' ? 2 : 999,
+    borderWidth: Platform.OS === 'web' ? 1 : 0,
+    borderColor: Platform.OS === 'web' ? brand.border : 'transparent',
     flexDirection: 'row',
     gap: 7,
     paddingHorizontal: 13,
@@ -60,3 +62,4 @@ const styles = StyleSheet.create({
   modeIcon: { color: brand.orangeDark, fontSize: 15, fontWeight: '800' },
   modeText: { color: brand.orangeDark, fontSize: 12, fontWeight: '800' },
 });
+

@@ -185,7 +185,7 @@ function CheckRow({ label, value, onPress }: { label: string; value: boolean; on
 const styles = StyleSheet.create({
   backdrop: { alignItems: 'center', backgroundColor: '#10221FD8', flex: 1, justifyContent: 'center', padding: 12 },
   dialogWrap: { maxHeight: '94%', width: '100%', maxWidth: 590 },
-  dialog: { backgroundColor: brand.surface, borderRadius: 22, maxHeight: '100%', padding: 20 },
+  dialog: { backgroundColor: brand.surface, borderRadius: Platform.OS === 'web' ? 3 : 22, maxHeight: '100%', padding: 20 },
   headingRow: { alignItems: 'flex-start', flexDirection: 'row', gap: 14, marginBottom: 15 },
   title: { color: brand.ink, fontSize: 22, fontWeight: '800', letterSpacing: -0.5 },
   subtitle: { color: brand.muted, fontSize: 12, lineHeight: 18, marginTop: 4 },
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   categoryIcon: { fontSize: 14 },
   categoryName: { color: '#52625D', fontSize: 11, fontWeight: '700' },
   categoryNameActive: { color: brand.orangeDark },
-  input: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 11, borderWidth: 1, color: brand.ink, fontSize: 14, minHeight: 44, paddingHorizontal: 12, paddingVertical: 10 },
+  input: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: Platform.OS === 'web' ? 2 : 11, borderWidth: 1, color: brand.ink, fontSize: 14, minHeight: 44, paddingHorizontal: 12, paddingVertical: 10 },
   textArea: { minHeight: 94, textAlignVertical: 'top' },
   helper: { color: brand.muted, fontSize: 10, lineHeight: 15, marginTop: 5 },
   row: { flexDirection: 'row', gap: 10 },
@@ -216,7 +216,8 @@ const styles = StyleSheet.create({
   tick: { color: '#fff', fontSize: 12, fontWeight: '900' },
   checkLabel: { color: brand.ink, flex: 1, fontSize: 11, fontWeight: '600' },
   error: { color: '#B42318', fontSize: 12, fontWeight: '700', marginVertical: 8 },
-  submit: { alignItems: 'center', backgroundColor: brand.orangeDark, borderRadius: 12, marginTop: 16, padding: 14 },
+  submit: { alignItems: 'center', backgroundColor: brand.orangeDark, borderRadius: Platform.OS === 'web' ? 2 : 12, marginTop: 16, padding: 14 },
   submitText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   footerNote: { color: brand.muted, fontSize: 10, lineHeight: 15, marginBottom: 6, marginTop: 10, textAlign: 'center' },
 });
+

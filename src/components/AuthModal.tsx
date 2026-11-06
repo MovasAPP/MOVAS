@@ -116,9 +116,9 @@ function Field({ label, ...props }: { label: string } & React.ComponentProps<typ
 }
 
 const styles = StyleSheet.create({
-  backdrop: { alignItems: 'center', backgroundColor: '#10221FD8', flex: 1, justifyContent: 'center', padding: 14 },
+  backdrop: { alignItems: 'center', backgroundColor: Platform.OS === 'web' ? '#292B28B8' : '#10221FD8', flex: 1, justifyContent: 'center', padding: 14 },
   wrap: { maxHeight: '90%', width: '100%', maxWidth: 480 },
-  sheet: { backgroundColor: brand.surface, borderRadius: 22, maxHeight: '100%', padding: 22 },
+  sheet: { backgroundColor: brand.surface, borderRadius: Platform.OS === 'web' ? 3 : 22, maxHeight: '100%', padding: 22 },
   heading: { alignItems: 'flex-start', flexDirection: 'row', gap: 12, marginBottom: 12 },
   eyebrow: { color: brand.orangeDark, fontSize: 9, fontWeight: '900', letterSpacing: 1.1 },
   title: { color: brand.ink, fontSize: 22, fontWeight: '900', letterSpacing: -0.5, marginTop: 7 },
@@ -127,11 +127,11 @@ const styles = StyleSheet.create({
   closeText: { color: brand.ink, fontSize: 23, lineHeight: 27 },
   field: { marginTop: 12 },
   label: { color: brand.ink, fontSize: 11, fontWeight: '800', marginBottom: 6 },
-  input: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: 11, borderWidth: 1, color: brand.ink, fontSize: 14, minHeight: 46, paddingHorizontal: 12 },
+  input: { backgroundColor: '#fff', borderColor: brand.border, borderRadius: Platform.OS === 'web' ? 2 : 11, borderWidth: 1, color: brand.ink, fontSize: 14, minHeight: 46, paddingHorizontal: 12 },
   error: { color: '#B42318', fontSize: 11, fontWeight: '700', marginTop: 10 },
   confirmationBox: { backgroundColor: brand.successSoft, borderRadius: 13, padding: 14 },
   confirmationText: { color: brand.success, fontSize: 12, lineHeight: 18 },
-  submit: { alignItems: 'center', backgroundColor: brand.orangeDark, borderRadius: 12, marginTop: 16, padding: 14 },
+  submit: { alignItems: 'center', backgroundColor: brand.orangeDark, borderRadius: Platform.OS === 'web' ? 2 : 12, marginTop: 16, padding: 14 },
   submitDisabled: { opacity: 0.6 },
   submitText: { color: '#fff', fontSize: 13, fontWeight: '800' },
   forgotButton: { alignSelf: 'center', marginTop: 12, padding: 4 },
@@ -141,3 +141,4 @@ const styles = StyleSheet.create({
   switchAction: { color: brand.orangeDark, fontSize: 11, fontWeight: '800' },
   note: { color: brand.muted, fontSize: 9, lineHeight: 15, marginBottom: 3, marginTop: 15, textAlign: 'center' },
 });
+

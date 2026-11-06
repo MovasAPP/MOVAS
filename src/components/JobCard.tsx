@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 
 import { brand } from '@/constants/brand';
@@ -32,7 +32,7 @@ export function JobCard({ job, actionLabel = 'Ver serviço', onAction }: Props) 
         </ScrollView>
       ) : (
         <View style={[styles.art, { backgroundColor: colorFor(job.category) }]}>
-          <Text style={styles.artIcon}>{job.icon}</Text>
+          {Platform.OS === 'web' ? null : <Text style={styles.artIcon}>{job.icon}</Text>}
           <Text style={styles.category}>{job.category}</Text>
         </View>
       )}
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: brand.surface,
     borderColor: brand.border,
-    borderRadius: 18,
+    borderRadius: Platform.OS === 'web' ? 2 : 18,
     borderWidth: 1,
     flex: 1,
     minWidth: 255,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   art: {
     alignItems: 'flex-end',
-    borderRadius: 13,
+    borderRadius: Platform.OS === 'web' ? 2 : 13,
     flexDirection: 'row',
     height: 106,
     justifyContent: 'space-between',
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   photos: { gap: 8, marginBottom: 13 },
-  photo: { borderRadius: 13, height: 106, width: 190 },
+  photo: { borderRadius: Platform.OS === 'web' ? 2 : 13, height: 106, width: 190 },
   artIcon: {
     alignItems: 'center',
     backgroundColor: '#FFFFFFB8',
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 9,
     paddingVertical: 5,
   },
-  title: { color: brand.ink, fontSize: 16, fontWeight: '800', letterSpacing: -0.3, marginBottom: 7 },
+  title: { color: brand.ink, fontFamily: Platform.OS === 'web' ? 'Georgia' : undefined, fontSize: 16, fontWeight: Platform.OS === 'web' ? '400' : '800', letterSpacing: -0.3, marginBottom: 7 },
   metaRow: { alignItems: 'center', flexDirection: 'row', gap: 7, flexWrap: 'wrap' },
   meta: { color: brand.muted, fontSize: 11 },
   dot: { color: '#AEB7B2' },
@@ -144,3 +144,4 @@ const styles = StyleSheet.create({
   button: { backgroundColor: brand.orangeSoft, borderRadius: 10, paddingHorizontal: 11, paddingVertical: 9 },
   buttonText: { color: brand.orangeDark, fontSize: 11, fontWeight: '800' },
 });
+
